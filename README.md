@@ -1,2 +1,2 @@
 # SIG-Projet-Damien-et-Mossane
-Voici notre projet de SIG
+Acceptabilité sociale éolienne dans le Finistère : analyse comparative entre Plougasnou et Roscoff
