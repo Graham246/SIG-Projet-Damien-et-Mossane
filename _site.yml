@@ -1,0 +1,7 @@
+name: "SIG-Projet-Damien-et-Mossane"
+output_dir: "docs"
+navbar:
+  title: "Projet SIG"
+  left:
+    - text: "Accueil"
+      href: index.html
