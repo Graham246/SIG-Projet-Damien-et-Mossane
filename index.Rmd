@@ -1,30 +1,36 @@
 ---
-title: "Projet SIG"
-author: "Damien et Mossane"
-date: "2026-04-25"
+title: "Acceptabilité sociale éolienne dans le Finistère"
+author: "Damien Ribeiro et Mossane Kachama"
+date: "2026-04-25 | *Ce projet est en cours de réalisation*"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+## Introduction
 
-## R Markdown
+Face aux objectifs climatiques de la France, le déploiement des énergies renouvelables, et notamment de l'éolien, s'accélère. Pourtant, ce déploiement se heurte à de nombreuses résistances locales. Plougasnou et Roscoff, deux communes du nord-Finistère, sont toutes deux riveraines du même projet éolien offshore — le parc de Bretagne Nord-Ouest (BNO), prévu au large de la Baie de Morlaix, et donc exposées au même potentiel éolien. Pourtant, leurs dynamiques sociales sont très différentes.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Problématique
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+**Pourquoi deux communes à potentiel offshore équivalent peuvent présenter des niveaux d'acceptabilité différents face à un projet éolien offshore ?**
 
-```{r cars}
-summary(cars)
-```
+## Portée du projet
 
-## Including Plots
+Le projet permet de croiser deux types de paramètres :
 
-You can also embed plots, for example:
+- Le **facteur technique** lié à l'éolien (vent, relief, occupation du sol)
+- La **variable sociale** (conflits d'usages, non-acceptabilité)
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
+## Zone d'étude
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Les deux communes étudiées sont situées dans le **nord-Finistère**, en Bretagne :
+
+| Commune | Population | Caractéristiques |
+|---------|-----------|-----------------|
+| **Roscoff** | ~3 500 hab. | Cité de caractère, patrimoine dense, tourisme |
+| **Plougasnou** | ~3 200 hab. | Commune littorale, pêche active, résidences secondaires |
+
+## Sommaire de l'étude
+
+1. [Les données mobilisées](zones.html) — vecteurs et rasters
+2. [Analyse socio-économique](conflits.html) — conflits d'usages et acceptabilité
+3. [Synthèse territoriale](croisement.html) — croisement des analyses
