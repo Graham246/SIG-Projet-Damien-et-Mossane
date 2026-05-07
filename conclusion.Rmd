@@ -1,0 +1,41 @@
+---
+title: "Conclusion"
+author: "Damien Ribeiro et Mossane Kachama"
+date: "2026-04-25"
+output: html_document
+---
+
+## Bilan de l'étude
+
+Cette étude comparative entre Roscoff et Plougasnou illustre une réalité fondamentale de la géographie des énergies renouvelables : **le potentiel technique ne suffit pas à garantir l'acceptabilité sociale**.
+
+## Ce que notre SIG a démontré
+
+En croisant données physiques et socio-économiques, notre analyse spatiale révèle que :
+
+- Les **deux communes** présentent un potentiel éolien offshore **équivalent**
+- Pourtant, les **facteurs d'opposition** sont radicalement différents
+- L'acceptabilité est un phénomène **territorialement situé**, qui dépend de l'histoire, de l'économie et de la sociologie locale
+
+## Les apports de l'approche SIG
+
+L'utilisation d'un Système d'Information Géographique a permis de :
+
+1. **Quantifier** l'intervisibilité des éoliennes depuis les zones habitées
+2. **Cartographier** les conflits d'usages (zones de pêche, patrimoine)
+3. **Croiser** des données hétérogènes (physiques, sociales, économiques)
+4. **Spatialiser** les dynamiques d'opposition locale
+
+## Limites et perspectives
+
+| Limite | Perspective |
+|--------|-------------|
+| Données de pêche incomplètes | Enquêtes auprès des comités de pêche |
+| Absence de données de sentiment | Analyse de presse locale et pétitions |
+| Modèle statique | Suivi temporel de l'évolution de l'opinion |
+
+## Conclusion générale
+
+La Baie de Morlaix constitue un **laboratoire géographique** idéal pour comprendre les mécanismes de l'acceptabilité éolienne. Notre étude montre que toute politique de déploiement éolien doit impérativement intégrer une **analyse territoriale fine**, prenant en compte les spécificités économiques, patrimoniales et sociologiques de chaque commune.
+
+> *"L'espace n'est pas un simple contenant neutre : il est chargé d'histoires, d'usages et d'identités qui conditionnent l'acceptation ou le rejet de toute transformation du paysage."*
