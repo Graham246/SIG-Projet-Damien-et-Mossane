@@ -1,0 +1,50 @@
+---
+title: "Analyse socio-économique et conflits d'usages"
+author: "Damien Ribeiro et Mossane Kachama"
+date: "2026-04-25"
+output: html_document
+---
+
+## Pourquoi l'acceptabilité diverge-t-elle ?
+
+Bien que Roscoff et Plougasnou partagent le même potentiel éolien, leurs dynamiques sociales sont très différentes. Trois facteurs expliquent cette divergence.
+
+## I. La structure de l'économie locale
+
+L'acceptabilité dépend souvent de **"qui"** utilise la mer :
+
+| Commune | Économie maritime | Perception du projet |
+|---------|------------------|---------------------|
+| **Roscoff** | Port de commerce, pêche industrielle, recherche marine | Opportunité de diversification industrielle |
+| **Plougasnou** | Pêche artisanale côtière (Le Diben) | "Privatisation" des zones de casiers |
+
+Les pêcheurs artisanaux de Plougasnou peuvent percevoir les éoliennes comme une menace directe sur leurs zones de travail, générant une **opposition frontale**.
+
+## II. Le poids du patrimoine et du tourisme
+
+| Commune | Enjeu patrimonial | Type d'opposition |
+|---------|------------------|-------------------|
+| **Roscoff** | Clocher Notre-Dame-de-Croaz-Batz, label "Petite Cité de Caractère" | Pollution visuelle, dégradation du label touristique |
+| **Plougasnou** | Pointe de Primel, paysage côtier "naturel" | Rupture d'un paysage préservé |
+
+## III. La sociologie des résidents
+
+C'est ici que la **jointure de données INSEE** est fondamentale :
+
+### Résidences secondaires
+Un fort taux de résidences secondaires réduit l'acceptabilité. Les propriétaires non-résidents sont très sensibles à :
+- La **valeur de contemplation** du paysage
+- La **valeur immobilière** de leurs biens
+
+### Âge de la population
+- Les **retraités** (très présents sur ce littoral) ont une vision "patrimoniale" du paysage
+- Une **population plus jeune** pourrait être plus sensible aux arguments d'autonomie énergétique
+
+## IV. L'analyse d'intervisibilité
+
+Le **MNT** permet de prouver une différence majeure entre les deux communes :
+
+- **Roscoff** est relativement plat → la vue sur mer est omniprésente depuis le centre-ville
+- **Plougasnou** possède un relief accidenté (falaises, pointes) → les éoliennes peuvent être totalement masquées pour les habitants vivant dans les creux de vallons
+
+**Hypothèse SIG** : Moins d'habitants voient les éoliennes à Plougasnou qu'à Roscoff, ce qui réduit mécaniquement la base de l'opposition.
