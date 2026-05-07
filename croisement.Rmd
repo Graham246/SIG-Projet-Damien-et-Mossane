@@ -1,0 +1,47 @@
+---
+title: "Synthèse territoriale"
+author: "Damien Ribeiro et Mossane Kachama"
+date: "2026-04-25"
+output: html_document
+---
+
+## Croiser les analyses
+
+Notre SIG croise deux dimensions complémentaires pour comprendre les dynamiques d'acceptabilité.
+
+## I. Ce que le SIG permet de démontrer
+
+| Critère | Roscoff | Plougasnou |
+|---------|---------|------------|
+| Potentiel éolien | ✅ Élevé | ✅ Élevé |
+| Relief | Plat → forte visibilité | Accidenté → visibilité partielle |
+| Patrimoine bâti classé | Dense | Limité |
+| Pêche artisanale | Secondaire | Primaire |
+| Résidences secondaires | Modéré | Élevé |
+| Opposition attendue | Patrimoniale et industrielle | Naturelle et économique |
+
+## II. Les "points de friction" identifiés
+
+### À Roscoff
+- L'impact visuel sur le **clocher de Notre-Dame-de-Croaz-Batz**
+- La menace sur le label **"Petite Cité de Caractère"**
+- Les intérêts du **port industriel** (Brittany Ferries)
+
+### À Plougasnou
+- Le chevauchement avec les **zones de pêche artisanale** (Le Diben)
+- La rupture du **paysage naturel** de la Pointe de Primel
+- La sensibilité des **propriétaires de résidences secondaires**
+
+## III. Hypothèses vérifiables par le SIG
+
+1. **Hypothèse visibilité** : Le bassin de visibilité (viewshed) couvre une plus grande surface habitée à Roscoff qu'à Plougasnou
+2. **Hypothèse économique** : Les zones de pêche artisanale de Plougasnou chevauchent davantage la zone du projet BNO
+3. **Hypothèse sociologique** : Le taux de résidences secondaires est corrélé avec l'intensité de l'opposition locale
+
+## IV. Résultats attendus
+
+L'acceptabilité à **Roscoff** est probablement dictée par des enjeux **patrimoniaux et industriels**.
+
+L'acceptabilité à **Plougasnou** est probablement dictée par la **préservation de la naturalité** et les **usages de pêche artisanale**.
+
+Ces résultats montrent qu'une approche purement technique de l'éolien offshore est insuffisante : le **facteur humain et territorial** est déterminant dans l'acceptabilité sociale des projets.
