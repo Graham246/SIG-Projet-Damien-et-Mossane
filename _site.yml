@@ -5,11 +5,9 @@ navbar:
   left:
     - text: "Accueil"
       href: index.html
-    - text: "Les données"
+    - text: "Données"
       href: zones.html
-    - text: "Analyse sociale"
-      href: conflits.html
-    - text: "Synthèse"
-      href: croisement.html
-    - text: "Conclusion"
-      href: conclusion.html
+    - text: "MNT"
+      href: mnt.html
+    - text: "Analyse"
+      href: analyse.html

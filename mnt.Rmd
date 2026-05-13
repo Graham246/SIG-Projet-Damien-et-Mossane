@@ -1,0 +1,33 @@
+---
+title: "Modèle Numérique de Terrain"
+author: "Damien Ribeiro et Mossane Kachama"
+date: "2026-05-13"
+output: html_document
+---
+
+## Le MNT : donnée fondamentale de notre analyse
+
+Le Modèle Numérique de Terrain (MNT) est issu de la **BD ALTI de l'IGN**. Chaque pixel contient l'altitude du terrain, ce qui permet de modéliser le relief des communes de Roscoff et Plougasnou.
+
+## Pourquoi le MNT est central dans notre projet ?
+
+Le MNT permet de calculer des **"Viewsheds"** (bassins de visibilité) : depuis quels endroits les éoliennes offshore seraient-elles visibles ?
+
+C'est une donnée clé car :
+
+- À **Roscoff** (relief plat) → la vue sur mer est omniprésente depuis le centre-ville
+- À **Plougasnou** (relief accidenté, falaises) → les éoliennes peuvent être masquées pour les habitants dans les vallons
+
+## Hypothèse vérifiée par le MNT
+
+**Moins d'habitants voient les éoliennes à Plougasnou qu'à Roscoff**, ce qui réduit mécaniquement la base de l'opposition sociale.
+
+## Traitements réalisés
+
+1. **Chargement du MNT** via le package `terra` dans R
+2. **Calcul du viewshed** depuis la position projetée du parc BNO
+3. **Croisement** avec la couche de bâti pour estimer la population exposée visuellement
+
+## Résultats
+
+*Les cartes et résultats seront intégrés ici une fois les traitements R finalisés.*

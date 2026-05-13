@@ -1,0 +1,73 @@
+---
+title: "Analyse, Synthèse et Conclusion"
+author: "Damien Ribeiro et Mossane Kachama"
+date: "2026-05-13"
+output: html_document
+---
+
+## I. Analyse socio-économique et conflits d'usages
+
+Bien que Roscoff et Plougasnou partagent le même potentiel éolien, leurs dynamiques sociales sont très différentes. Trois facteurs expliquent cette divergence.
+
+### La structure de l'économie locale
+
+| Commune | Économie maritime | Perception du projet |
+|---------|------------------|---------------------|
+| **Roscoff** | Port de commerce, pêche industrielle, recherche marine | Opportunité de diversification industrielle |
+| **Plougasnou** | Pêche artisanale côtière (Le Diben) | "Privatisation" des zones de casiers |
+
+### Le poids du patrimoine et du tourisme
+
+| Commune | Enjeu patrimonial | Type d'opposition |
+|---------|------------------|-------------------|
+| **Roscoff** | Clocher Notre-Dame-de-Croaz-Batz, "Petite Cité de Caractère" | Pollution visuelle, dégradation du label touristique |
+| **Plougasnou** | Pointe de Primel, paysage côtier naturel | Rupture d'un paysage préservé |
+
+### La sociologie des résidents
+
+- **Résidences secondaires** : un fort taux réduit l'acceptabilité (sensibilité à la valeur immobilière)
+- **Âge de la population** : les retraités ont une vision "patrimoniale" du paysage
+
+---
+
+## II. Synthèse territoriale
+
+| Critère | Roscoff | Plougasnou |
+|---------|---------|------------|
+| Potentiel éolien | ✅ Élevé | ✅ Élevé |
+| Relief | Plat → forte visibilité | Accidenté → visibilité partielle |
+| Patrimoine bâti classé | Dense | Limité |
+| Pêche artisanale | Secondaire | Primaire |
+| Résidences secondaires | Modéré | Élevé |
+| Opposition attendue | Patrimoniale et industrielle | Naturelle et économique |
+
+### Hypothèses vérifiables par le SIG
+
+1. **Hypothèse visibilité** : Le viewshed couvre une plus grande surface habitée à Roscoff
+2. **Hypothèse économique** : Les zones de pêche de Plougasnou chevauchent davantage le parc BNO
+3. **Hypothèse sociologique** : Le taux de résidences secondaires est corrélé avec l'intensité de l'opposition
+
+---
+
+## III. Conclusion
+
+Cette étude comparative illustre une réalité fondamentale : **le potentiel technique ne suffit pas à garantir l'acceptabilité sociale**.
+
+Notre SIG a démontré que :
+
+- Les deux communes présentent un potentiel éolien **équivalent**
+- Pourtant, les **facteurs d'opposition** sont radicalement différents
+- L'acceptabilité est un phénomène **territorialement situé**
+
+### Les apports de l'approche SIG
+
+1. **Quantifier** l'intervisibilité depuis les zones habitées
+2. **Cartographier** les conflits d'usages (zones de pêche, patrimoine)
+3. **Croiser** des données hétérogènes (physiques, sociales, économiques)
+4. **Spatialiser** les dynamiques d'opposition locale
+
+### Conclusion générale
+
+La Baie de Morlaix constitue un **laboratoire géographique** idéal pour comprendre les mécanismes de l'acceptabilité éolienne. Toute politique de déploiement éolien doit impérativement intégrer une **analyse territoriale fine**, prenant en compte les spécificités économiques, patrimoniales et sociologiques de chaque commune.
+
+> *"L'espace n'est pas un simple contenant neutre : il est chargé d'histoires, d'usages et d'identités qui conditionnent l'acceptation ou le rejet de toute transformation du paysage."*
