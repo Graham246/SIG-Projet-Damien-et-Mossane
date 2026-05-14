@@ -275,8 +275,8 @@ $(document).ready(function () {
 </div>
 
 
-<div id="analyse-de-lintervisibilité" class="section level2">
-<h2>Analyse de l’intervisibilité</h2>
+<div id="lanalyse-de-lintervisibilité" class="section level2">
+<h2>L’Analyse de l’intervisibilité</h2>
 <p>Dans notre analyse, le <strong>MNT</strong> a permis de prouver une
 différence majeure entre les deux communes.</p>
 <p>Même si la distance à la côte est la même, la topographie diffère :
@@ -356,7 +356,7 @@ taux_plougasnou &lt;- calc_taux(visib_plougasnou)
 
 barplot(c(taux_roscoff, taux_plougasnou),
         names.arg = c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;),
-        col = c(&quot;#2196F3&quot;, &quot;#FF9800&quot;),
+        col = c(&quot;#FF9800&quot;, &quot;#2196F3&quot;),
         main = &quot;Taux de visibilité du parc éolien par commune&quot;,
         ylab = &quot;% du territoire avec vue sur le parc&quot;,
         ylim = c(0, 100),
@@ -373,8 +373,7 @@ l’image de marque de la cité.</p>
 </div>
 <div id="carte-du-niveau-de-vie" class="section level2">
 <h2>Carte du niveau de vie</h2>
-<pre class="r"><code># Chargement depuis Documents (hors projet)
-grille &lt;- st_read(&quot;C:/Users/damie/Documents/carreaux_200m_met.gpkg&quot;, quiet = TRUE)
+<pre class="r"><code>grille &lt;- st_read(&quot;C:/Users/damie/Documents/carreaux_200m_met.gpkg&quot;, quiet = TRUE)
 
 grille_proj &lt;- st_transform(grille, 2154)
 zone_etude_proj &lt;- st_transform(zone_etude, 2154)
@@ -394,17 +393,7 @@ plot(st_geometry(zone_etude_proj), add = TRUE, border = &quot;black&quot;, lwd =
 <p><img src="analyse_files/figure-html/filosofi-1.png" alt="" width="672" /></p>
 <pre class="r"><code>par(mfrow = c(1, 2))
 
-roscoff_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp;
-                                   grille_communes$nom_officiel == &quot;Roscoff&quot;, ]
-plot(roscoff_grille[&quot;ind_snv&quot;],
-     main = &quot;Roscoff&quot;,
-     pal = colorRampPalette(c(&quot;#f0f9ff&quot;, &quot;#0ea5e9&quot;, &quot;#0c4a6e&quot;)),
-     border = NA,
-     key.pos = 4)
-plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == &quot;Roscoff&quot;, ]),
-     add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
-<p><img src="analyse_files/figure-html/filosofi-2.png" alt="" width="672" /></p>
-<pre class="r"><code>plougasnou_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp;
+plougasnou_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp;
                                       grille_communes$nom_officiel == &quot;Plougasnou&quot;, ]
 plot(plougasnou_grille[&quot;ind_snv&quot;],
      main = &quot;Plougasnou&quot;,
@@ -412,6 +401,16 @@ plot(plougasnou_grille[&quot;ind_snv&quot;],
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == &quot;Plougasnou&quot;, ]),
+     add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
+<p><img src="analyse_files/figure-html/filosofi-2.png" alt="" width="672" /></p>
+<pre class="r"><code>roscoff_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp;
+                                   grille_communes$nom_officiel == &quot;Roscoff&quot;, ]
+plot(roscoff_grille[&quot;ind_snv&quot;],
+     main = &quot;Roscoff&quot;,
+     pal = colorRampPalette(c(&quot;#f0f9ff&quot;, &quot;#0ea5e9&quot;, &quot;#0c4a6e&quot;)),
+     border = NA,
+     key.pos = 4)
+plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == &quot;Roscoff&quot;, ]),
      add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
 <p><img src="analyse_files/figure-html/filosofi-3.png" alt="" width="672" /></p>
 <pre class="r"><code>par(mfrow = c(1, 1))</code></pre>

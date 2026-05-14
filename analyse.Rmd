@@ -12,7 +12,7 @@ library(terra)
 library(happign)
 ```
 
-## Analyse de l'intervisibilité
+## L'Analyse de l'intervisibilité
 
 Dans notre analyse, le **MNT** a permis de prouver une différence majeure entre les deux communes.
 
@@ -81,7 +81,7 @@ taux_plougasnou <- calc_taux(visib_plougasnou)
 
 barplot(c(taux_roscoff, taux_plougasnou),
         names.arg = c("Roscoff", "Plougasnou"),
-        col = c("#2196F3", "#FF9800"),
+        col = c("#FF9800", "#2196F3"),
         main = "Taux de visibilité du parc éolien par commune",
         ylab = "% du territoire avec vue sur le parc",
         ylim = c(0, 100),
@@ -98,7 +98,6 @@ L'opposition à Plougasnou est donc plus localisée (riverains directs), tandis 
 ## Carte du niveau de vie
 
 ```{r filosofi}
-# Chargement depuis Documents (hors projet)
 grille <- st_read("C:/Users/damie/Documents/carreaux_200m_met.gpkg", quiet = TRUE)
 
 grille_proj <- st_transform(grille, 2154)
@@ -119,16 +118,6 @@ plot(st_geometry(zone_etude_proj), add = TRUE, border = "black", lwd = 2)
 
 par(mfrow = c(1, 2))
 
-roscoff_grille <- grille_communes[!is.na(grille_communes$nom_officiel) &
-                                   grille_communes$nom_officiel == "Roscoff", ]
-plot(roscoff_grille["ind_snv"],
-     main = "Roscoff",
-     pal = colorRampPalette(c("#f0f9ff", "#0ea5e9", "#0c4a6e")),
-     border = NA,
-     key.pos = 4)
-plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == "Roscoff", ]),
-     add = TRUE, border = "black", lwd = 2)
-
 plougasnou_grille <- grille_communes[!is.na(grille_communes$nom_officiel) &
                                       grille_communes$nom_officiel == "Plougasnou", ]
 plot(plougasnou_grille["ind_snv"],
@@ -137,6 +126,16 @@ plot(plougasnou_grille["ind_snv"],
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == "Plougasnou", ]),
+     add = TRUE, border = "black", lwd = 2)
+
+roscoff_grille <- grille_communes[!is.na(grille_communes$nom_officiel) &
+                                   grille_communes$nom_officiel == "Roscoff", ]
+plot(roscoff_grille["ind_snv"],
+     main = "Roscoff",
+     pal = colorRampPalette(c("#f0f9ff", "#0ea5e9", "#0c4a6e")),
+     border = NA,
+     key.pos = 4)
+plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == "Roscoff", ]),
      add = TRUE, border = "black", lwd = 2)
 
 par(mfrow = c(1, 1))
