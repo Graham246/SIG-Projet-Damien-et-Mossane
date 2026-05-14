@@ -282,8 +282,22 @@ class="section level2">
 de l’IGN</strong>. Chaque pixel contient l’altitude du terrain, ce qui
 permet de modéliser le relief des communes de Roscoff et Plougasnou.</p>
 </div>
-<div id="téléchargement-du-mnt-via-happign" class="section level2">
-<h2>1. Téléchargement du MNT via happign</h2>
+<div id="pourquoi-le-mnt-est-central-dans-notre-projet"
+class="section level2">
+<h2>1. Pourquoi le MNT est central dans notre projet ?</h2>
+<p>Le MNT permet de calculer des <strong>“Viewsheds”</strong> (bassins
+de visibilité) : depuis quels endroits les éoliennes offshore
+seraient-elles visibles ?</p>
+<p>C’est une donnée clé car :</p>
+<ul>
+<li>À <strong>Roscoff</strong> (relief plat) → la vue sur mer est
+omniprésente depuis le centre-ville</li>
+<li>À <strong>Plougasnou</strong> (relief accidenté, falaises) → les
+éoliennes peuvent être masquées pour les habitants dans les vallons</li>
+</ul>
+</div>
+<div id="code-de-téléchargement-du-mnt" class="section level2">
+<h2>2. Code de téléchargement du MNT</h2>
 <pre class="r"><code># Zone d&#39;étude centrée sur la Baie de Morlaix
 point &lt;- st_sfc(st_point(c(-3.85, 48.65)), crs = 4326)
 zone &lt;- st_buffer(st_transform(point, 2154), 20000)
@@ -292,17 +306,15 @@ zone &lt;- st_buffer(st_transform(point, 2154), 20000)
 mnt &lt;- get_wms_raster(x = zone,
                       layer = &quot;ELEVATION.ELEVATIONGRIDCOVERAGE.HIGHRES&quot;,
                       res = 25,
-                      crs = 2154)</code></pre>
-<pre><code>## 0</code></pre>
-<pre><code>## ...10...20...30...40...50...60...70...80...90...100 - done.</code></pre>
-<pre class="r"><code># Visualisation du MNT
+                      crs = 2154)
+
+# Visualisation du MNT
 plot(mnt, 
      main = &quot;MNT de la zone d&#39;étude — Baie de Morlaix&quot;,
      col = terrain.colors(100))</code></pre>
-<p><img src="mnt_files/figure-html/mnt-1.png" alt="" width="672" /></p>
 </div>
-<div id="création-des-points-éoliennes" class="section level2">
-<h2>2. Création des points éoliennes</h2>
+<div id="code-de-création-des-points-éoliennes" class="section level2">
+<h2>3. Code de création des points éoliennes</h2>
 <pre class="r"><code># Communes de Roscoff et Plougasnou
 communes &lt;- get_wfs(x = zone,
                     layer = &quot;ADMINEXPRESS-COG-CARTO.LATEST:commune&quot;)
@@ -312,19 +324,10 @@ zone_etude &lt;- communes[communes$nom_officiel %in% c(&quot;Roscoff&quot;, &quo
 eolienne_sfc &lt;- st_sfc(st_point(c(-3.95, 48.72)), crs = 4326)
 eolienne_proj &lt;- st_transform(eolienne_sfc, 2154)
 eolienne &lt;- st_sf(geometry = eolienne_proj)
-eolienne$hauteur &lt;- 180
-
-# Visualisation
-plot(mnt, main = &quot;Zone d&#39;étude et emplacement de l&#39;éolienne&quot;,
-     col = terrain.colors(100))
-plot(st_geometry(zone_etude), add = TRUE, border = &quot;black&quot;, lwd = 2)
-plot(st_geometry(eolienne), add = TRUE, col = &quot;red&quot;, pch = 17, cex = 2)
-legend(&quot;topright&quot;, legend = c(&quot;Communes&quot;, &quot;Éolienne offshore&quot;),
-       col = c(&quot;black&quot;, &quot;red&quot;), lty = c(1, NA), pch = c(NA, 17))</code></pre>
-<p><img src="mnt_files/figure-html/eoliennes-1.png" alt="" width="672" /></p>
+eolienne$hauteur &lt;- 180</code></pre>
 </div>
-<div id="calcul-du-viewshed" class="section level2">
-<h2>3. Calcul du Viewshed</h2>
+<div id="code-du-calcul-du-viewshed" class="section level2">
+<h2>4. Code du calcul du Viewshed</h2>
 <pre class="r"><code># Calcul du viewshed
 coords &lt;- st_coordinates(eolienne)
 visibilite &lt;- viewshed(mnt,
@@ -340,24 +343,20 @@ plot(visibilite,
 plot(st_geometry(zone_etude), add = TRUE, border = &quot;black&quot;, lwd = 2)
 legend(&quot;topright&quot;, legend = c(&quot;Non visible&quot;, &quot;Visible&quot;),
        fill = c(&quot;#f1f5f9&quot;, &quot;#ef4444&quot;))</code></pre>
-<p><img src="mnt_files/figure-html/viewshed-1.png" alt="" width="672" /></p>
 </div>
 <div id="analyse-comparative-roscoff-vs-plougasnou"
 class="section level2">
-<h2>4. Analyse comparative Roscoff vs Plougasnou</h2>
-<pre class="r"><code># Reprojection des communes en SpatVector pour terra
+<h2>5. Analyse comparative Roscoff vs Plougasnou</h2>
+<pre class="r"><code># Découpage par commune
 roscoff &lt;- zone_etude[zone_etude$nom_officiel == &quot;Roscoff&quot;, ]
 plougasnou &lt;- zone_etude[zone_etude$nom_officiel == &quot;Plougasnou&quot;, ]
 
-# Conversion en SpatVector et reprojection
 roscoff_vect &lt;- project(vect(roscoff), crs(visibilite))
 plougasnou_vect &lt;- project(vect(plougasnou), crs(visibilite))
 
-# Découpage
 visib_roscoff &lt;- crop(visibilite, roscoff_vect, mask = TRUE)
 visib_plougasnou &lt;- crop(visibilite, plougasnou_vect, mask = TRUE)
 
-# Calcul du taux de visibilité
 calc_taux &lt;- function(r) {
   f &lt;- freq(r)
   visible &lt;- f$count[f$value == 1]
@@ -377,28 +376,9 @@ resultats &lt;- data.frame(
 knitr::kable(resultats,
              col.names = c(&quot;Commune&quot;, &quot;Taux de visibilité (%)&quot;),
              caption = &quot;Pourcentage du territoire avec vue sur l&#39;éolienne&quot;)</code></pre>
-<table>
-<caption>Pourcentage du territoire avec vue sur l’éolienne</caption>
-<thead>
-<tr class="header">
-<th align="left">Commune</th>
-<th align="right">Taux de visibilité (%)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Roscoff</td>
-<td align="right">0.7</td>
-</tr>
-<tr class="even">
-<td align="left">Plougasnou</td>
-<td align="right">0.2</td>
-</tr>
-</tbody>
-</table>
 </div>
 <div id="interprétation" class="section level2">
-<h2>5. Interprétation</h2>
+<h2>6. Interprétation</h2>
 <p><span class="math display">\[\text{Taux de visibilité} = \frac{\sum
 \text{Pixels visibles}}{\sum \text{Pixels totaux de la commune}} \times
 100\]</span></p>
