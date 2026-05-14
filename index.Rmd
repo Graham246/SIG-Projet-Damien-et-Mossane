@@ -5,37 +5,12 @@ date: "2026-04-25 | *Ce projet est en cours de réalisation*"
 output: html_document
 ---
 
-## Introduction
-
-Le littoral du Finistère Nord, et plus particulièrement la zone entourant la Baie de Morlaix, se situe au cœur des débats sur la transition énergétique. Si le potentiel énergétique (vitesse de vent, faible profondeur) est quasi identique pour les communes de Plougasnou (à l'est) et de Roscoff (à l'ouest), la réception sociale des projets diverge.
-
 ## Sommaire de l'étude
 
 1. [Les données mobilisées](zones.html) — vecteurs, rasters et GeoPackage
 2. [Modèle Numérique de Terrain](mnt.html) — viewsheds et intervisibilité
 3. [Analyse et synthèse](analyse.html) — conflits d'usages, sociologie et conclusion
 
-## Problématique
+Les deux communes étudiées, Roscoff et Plougasnou, se situent dans la Baie de Morlaix, sur le littoral du Finistère Nord, où l'on identifie un fort potentiel énergétique pour l'éolien. On observe alors de nombreux débats autour de la mise en place de projets éolien, et notamment autour de leur acceptabilité dans les différentes communes concernées. Roscoff et Plougasnou se trouvent à moins de 15km l'une de l'autre et présentent un potentiel éolien quasiment identique (un régime de vent avec une dominante Ouest/Nord-Ouest, une faible profondeur offshore…), et elles partagent une riche biodiversité marine et les contraintes Natura 2000 qui l'accompagnent, ainsi qu'un développement d'activité liée au littoral. Pourtant, d'un point de vue social, les projets d'implantation d'éoliennes sont reçus assez différemment.
 
-**Pourquoi deux communes partageant un même "espace vécu" maritime réagissent-elles différemment à l'implantation d'éoliennes ? Est-ce une question de visibilité paysagère, de structure économique (conflits avec la pêche vs tourisme de cure) ou de composition sociologique de la population ?**
-
-## Objectif du SIG
-
-L'analyse spatiale permettra de croiser des critères physiques (visibilité depuis la côte) et des critères socio-économiques pour identifier les **"points de friction"** spécifiques à chaque commune.
-
-## Zone d'étude
-
-Les deux communes étudiées sont situées dans le **nord-Finistère**, en Bretagne :
-
-| Commune | Surnom | Caractéristiques principales |
-|---------|--------|------------------------------|
-| **Roscoff** | *"Cité Corsaire"* | Port de commerce, pêche, centre de recherche, patrimoine dense |
-| **Plougasnou** | *"Côte des Bruyères"* | Pêche artisanale, résidences secondaires, paysage naturel |
-
-## Points de convergence
-
-Avant d'analyser les divergences, notre SIG montre que le socle physique est identique :
-
-- **Gisement éolien** : Les deux communes font face à la Manche avec un régime de vents (dominante Ouest/Nord-Ouest) similaire
-- **Écosystème marin** : Elles partagent la richesse de la Baie de Morlaix (champs de laminaires, biodiversité marine) et les mêmes contraintes Natura 2000
-- **Culture maritime** : Les deux communes possèdent une identité forte liée à la mer, mais l'**usage** de cette mer diffère
+En croisant des **critères physiques**, comme le relief auquel est soumis chaque commune, et des **critères socio-économiques** concernant les occupants de ces deux communes, nous essaierons d'identifier les éléments entrants en corrélation et pouvant influer sur la manière dont chaque commune est affectée par l'implantation éolienne.
