@@ -1,7 +1,6 @@
 ---
 title: "Les données mobilisées"
-author: "Damien Ribeiro et Mossane Kachama"
-date: "2026-05-13"
+
 output:
   html_document:
     self_contained: true
