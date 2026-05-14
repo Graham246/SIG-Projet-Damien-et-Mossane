@@ -22,7 +22,7 @@ Pour répondre à notre problématique, nous mobilisons deux types de données.
 
 Nous téléchargeons les communes de Roscoff et Plougasnou via **happign** :
 
-```{r communes}
+```{r communes, eval=FALSE}
 # Créer un point centré sur la Baie de Morlaix
 point <- st_sfc(st_point(c(-3.85, 48.65)), crs = 4326)
 zone <- st_buffer(st_transform(point, 2154), 15000)
@@ -40,23 +40,66 @@ plot(st_geometry(zone_etude),
      main = "Zone d'étude : Roscoff et Plougasnou")
 ```
 
-## B. Les données vecteurs
+## B. Téléchargement du carreau Filosofi
+
+Le carreau Filosofi (INSEE) fournit des données socio-économiques à l'échelle de carreaux de 200m : revenus médians et part de résidences secondaires.
+
+```{r filosofi, eval=FALSE}
+# Téléchargement du carreau Filosofi sur la zone d'étude
+filosofi <- get_wfs(x = zone,
+                    layer = "STATISTIQUES-EXPRESS.FILOSOFI2019CARR200M:filosofi_carr_200m_met")
+
+# Affichage
+plot(st_geometry(zone_etude), 
+     col = NA, border = "black", lwd = 2,
+     main = "Carreau Filosofi 200m sur la zone d'étude")
+plot(st_geometry(filosofi), 
+     col = "#eef2ff", border = "#818cf8", 
+     add = TRUE)
+plot(st_geometry(zone_etude), 
+     col = NA, border = "black", lwd = 2, 
+     add = TRUE)
+```
+
+## C. Jointure spatiale sur les communes
+
+On découpe le carreau Filosofi par commune pour obtenir les données socio-économiques de Roscoff et Plougasnou séparément.
+
+```{r jointure, eval=FALSE}
+# Jointure spatiale : intersection du carreau avec les communes
+filosofi_communes <- st_intersection(filosofi, zone_etude)
+
+# Affichage par commune
+plot(st_geometry(zone_etude), 
+     col = NA, border = "black", lwd = 2,
+     main = "Carreau Filosofi découpé par commune")
+plot(st_geometry(filosofi_communes[filosofi_communes$nom_officiel == "Roscoff", ]),
+     col = "#bfdbfe", border = "#3b82f6", add = TRUE)
+plot(st_geometry(filosofi_communes[filosofi_communes$nom_officiel == "Plougasnou", ]),
+     col = "#fed7aa", border = "#f97316", add = TRUE)
+legend("topright", 
+       legend = c("Roscoff", "Plougasnou"),
+       fill = c("#bfdbfe", "#fed7aa"))
+```
+
+## D. Les données vecteurs
 
 | Donnée | Type | Source | Utilité |
 |--------|------|--------|---------|
 | Limites administratives | Polygones | IGN Admin Express | Découper la zone d'étude |
+| Carreau Filosofi 200m | Polygones | INSEE | Revenus et résidences secondaires |
 | Zones Natura 2000 / ZNIEFF | Polygones | INPN | Contraintes environnementales |
 | Patrimoine bâti | Points/Polygones | Base Mérimée | Impact visuel |
 | Emprises de pêche | Polygones | Comités de pêche | Conflits d'usages |
 
-## C. Les données rasters
+## E. Les données rasters
 
 | Donnée | Source | Utilité |
 |--------|--------|---------|
 | MNT | BD ALTI — IGN | Calcul des viewsheds |
 | Potentiel éolien | Global Wind Atlas | Potentiel équivalent |
 
-## D. Schéma du géotraitement
+## F. Schéma du géotraitement
 
 ```{r schema, echo=FALSE}
 library(DiagrammeR)
@@ -105,12 +148,15 @@ digraph geotraitement {
 ")
 ```
 
-## E. Le format GeoPackage (.gpkg)
+## G. Le format GeoPackage (.gpkg)
 
 ```{r gpkg, eval=FALSE}
 # Sauvegarde dans un GeoPackage
 st_write(zone_etude, "data/projet_eolien.gpkg", 
          layer = "communes", 
+         append = FALSE)
+st_write(filosofi_communes, "data/projet_eolien.gpkg",
+         layer = "filosofi_communes",
          append = FALSE)
 ```
 
