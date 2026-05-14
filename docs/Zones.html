@@ -11,7 +11,7 @@
 
 <meta name="author" content="Damien Ribeiro et Mossane Kachama" />
 
-<meta name="date" content="2026-04-25" />
+<meta name="date" content="2026-05-13" />
 
 <title>Les données mobilisées</title>
 
@@ -248,16 +248,13 @@ $(document).ready(function () {
   <a href="index.html">Accueil</a>
 </li>
 <li>
-  <a href="zones.html">Les données</a>
+  <a href="zones.html">Données</a>
 </li>
 <li>
-  <a href="conflits.html">Analyse sociale</a>
+  <a href="mnt.html">MNT</a>
 </li>
 <li>
-  <a href="croisement.html">Synthèse</a>
-</li>
-<li>
-  <a href="conclusion.html">Conclusion</a>
+  <a href="analyse.html">Analyse</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -273,7 +270,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Les données mobilisées</h1>
 <h4 class="author">Damien Ribeiro et Mossane Kachama</h4>
-<h4 class="date">2026-04-25</h4>
+<h4 class="date">2026-05-13</h4>
 
 </div>
 
@@ -284,9 +281,30 @@ class="section level2">
 <p>Pour répondre à notre problématique, nous mobilisons deux types de
 données.</p>
 </div>
-<div id="a.-les-données-vecteurs" class="section level2">
-<h2>A. Les données vecteurs</h2>
-<p>Les vecteurs représentent des objets aux contours nets.</p>
+<div id="a.-téléchargement-des-limites-administratives"
+class="section level2">
+<h2>A. Téléchargement des limites administratives</h2>
+<p>Nous téléchargeons les communes de Roscoff et Plougasnou via
+<strong>happign</strong> :</p>
+<pre class="r"><code># Créer un point centré sur la Baie de Morlaix
+point &lt;- st_sfc(st_point(c(-3.85, 48.65)), crs = 4326)
+zone &lt;- st_buffer(st_transform(point, 2154), 15000)
+
+# Téléchargement des communes autour de la zone
+communes &lt;- get_wfs(x = zone,
+                    layer = &quot;ADMINEXPRESS-COG-CARTO.LATEST:commune&quot;)
+
+# Filtrage sur Roscoff et Plougasnou
+zone_etude &lt;- communes[communes$nom_officiel %in% c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;), ]
+
+# Affichage
+plot(st_geometry(zone_etude), 
+     col = c(&quot;#2196F3&quot;, &quot;#FF9800&quot;),
+     main = &quot;Zone d&#39;étude : Roscoff et Plougasnou&quot;)</code></pre>
+<p><img src="zones_files/figure-html/communes-1.png" alt="" width="672" /></p>
+</div>
+<div id="b.-les-données-vecteurs" class="section level2">
+<h2>B. Les données vecteurs</h2>
 <table>
 <colgroup>
 <col width="25%" />
@@ -316,10 +334,10 @@ données.</p>
 <td>Contraintes environnementales</td>
 </tr>
 <tr class="odd">
-<td>Patrimoine bâti et sites classés</td>
+<td>Patrimoine bâti</td>
 <td>Points/Polygones</td>
 <td>Base Mérimée</td>
-<td>Impact visuel et juridique</td>
+<td>Impact visuel</td>
 </tr>
 <tr class="even">
 <td>Emprises de pêche</td>
@@ -329,35 +347,10 @@ données.</p>
 </tr>
 </tbody>
 </table>
-<div id="zones-de-protection-environnementale" class="section level3">
-<h3>Zones de protection environnementale</h3>
-<p>Roscoff et Plougasnou sont entourées d’espaces maritimes protégés.
-Une forte densité de zones protégées augmente souvent la résistance
-locale.</p>
 </div>
-<div id="patrimoine-bâti" class="section level3">
-<h3>Patrimoine bâti</h3>
-<p>Roscoff possède un patrimoine historique dense (<strong>Cité de
-caractère</strong>). L’impact visuel sur un clocher classé n’a pas le
-même poids juridique et social qu’une vue sur une zone habitée
-classique.</p>
-</div>
-<div id="emprises-de-pêche" class="section level3">
-<h3>Emprises de pêche</h3>
-<p>Si les éoliennes chevauchent une zone de frayère ou de pose de
-casiers très active à Plougasnou, l’acceptabilité chute
-considérablement.</p>
-</div>
-</div>
-<div id="b.-les-données-rasters" class="section level2">
-<h2>B. Les données rasters</h2>
-<p>Le raster est idéal pour représenter des phénomènes continus.</p>
+<div id="c.-les-données-rasters" class="section level2">
+<h2>C. Les données rasters</h2>
 <table>
-<colgroup>
-<col width="32%" />
-<col width="32%" />
-<col width="36%" />
-</colgroup>
 <thead>
 <tr class="header">
 <th>Donnée</th>
@@ -367,29 +360,26 @@ considérablement.</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td>MNT (Modèle Numérique de Terrain)</td>
+<td>MNT</td>
 <td>BD ALTI — IGN</td>
-<td>Calcul des viewsheds (bassins de visibilité)</td>
+<td>Calcul des viewsheds</td>
 </tr>
 <tr class="even">
-<td>Potentiel éolien (vitesse de vent)</td>
-<td>Météo France / Global Wind Atlas</td>
-<td>Preuve du potentiel équivalent</td>
+<td>Potentiel éolien</td>
+<td>Global Wind Atlas</td>
+<td>Potentiel équivalent</td>
 </tr>
 </tbody>
 </table>
-<div id="le-mnt" class="section level3">
-<h3>Le MNT</h3>
-<p>C’est la donnée fondamentale. Chaque pixel contient l’altitude. Grâce
-à lui, nous calculons des <strong>“Viewsheds”</strong> (bassins de
-visibilité) pour déterminer depuis où les éoliennes seraient
-visibles.</p>
 </div>
-<div id="le-potentiel-éolien" class="section level3">
-<h3>Le potentiel éolien</h3>
-<p>Un raster où chaque pixel indique la force moyenne du vent. Cela
-prouve scientifiquement que</p>
-</div>
+<div id="d.-le-format-geopackage-.gpkg" class="section level2">
+<h2>D. Le format GeoPackage (.gpkg)</h2>
+<pre class="r"><code># Sauvegarde dans un GeoPackage
+st_write(zone_etude, &quot;data/projet_eolien.gpkg&quot;, 
+         layer = &quot;communes&quot;, 
+         append = FALSE)</code></pre>
+<p>Toutes nos couches sont stockées dans un seul fichier
+<code>.gpkg</code> — unique, rapide et complet.</p>
 </div>
 
 
