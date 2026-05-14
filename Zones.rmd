@@ -45,7 +45,7 @@ zone_etude <- communes[communes$nom_officiel %in% c("Roscoff", "Plougasnou"), ]
 plot(st_geometry(zone_etude), 
      col = c("#2196F3", "#FF9800"),
      main = "Zone d'étude : Roscoff et Plougasnou")
-legend("topright", legend = c("Roscoff", "Plougasnou"),
+legend("topright", legend = c("Plougasnou", "Roscoff"),
        fill = c("#2196F3", "#FF9800"))
 ```
 
