@@ -1,6 +1,5 @@
 ---
 title: "Les données mobilisées"
-
 output:
   html_document:
     self_contained: true
@@ -51,42 +50,45 @@ legend("topright", legend = c("Plougasnou", "Roscoff"),
 
 ## B. Téléchargement du carreau Filosofi (INSEE)
 
-Le carreau Filosofi fournit des données socio-économiques à l'échelle de carreaux de 200m : revenus médians et part de résidences secondaires. Ces données sont téléchargées directement depuis le site de l'INSEE.
+```{r filosofi}
+# Chargement depuis Documents
+grille <- st_read("C:/Users/damie/Documents/carreaux_200m_met.gpkg", quiet = TRUE)
 
-```{r filosofi, eval=FALSE, echo=TRUE}
-# Téléchargement du carreau Filosofi depuis l'INSEE
-# URL : https://www.insee.fr/fr/statistiques/fichier/7655475/Filosofi2019_carreaux_200m_gpkg.zip
-# Une fois téléchargé et décompressé :
-filosofi <- st_read("data/Filosofi2019_carreaux_200m_metropole.gpkg")
+# Reprojection en Lambert-93
+grille_proj <- st_transform(grille, 2154)
+zone_etude_proj <- st_transform(zone_etude, 2154)
 
 # Filtrage sur la zone d'étude
-filosofi_zone <- st_intersection(st_transform(filosofi, 2154), zone)
+idx <- st_intersects(grille_proj, st_union(zone_etude_proj), sparse = FALSE)[,1]
+grille_zone <- grille_proj[idx, ]
 
 # Affichage du carreau par dessus les communes
-plot(st_geometry(zone_etude), 
+plot(st_geometry(zone_etude_proj), 
      col = c("#2196F3", "#FF9800"),
      main = "Carreau Filosofi 200m — Roscoff et Plougasnou")
-plot(st_geometry(filosofi_zone), 
+plot(st_geometry(grille_zone), 
      col = "#eef2ff88", border = "#818cf8", 
      add = TRUE)
-plot(st_geometry(zone_etude), 
+plot(st_geometry(zone_etude_proj), 
      col = NA, border = "black", lwd = 2,
      add = TRUE)
 ```
 
 ## C. Jointure spatiale sur les communes
 
-```{r jointure, eval=FALSE, echo=TRUE}
+```{r jointure}
 # Jointure spatiale
-filosofi_communes <- st_intersection(filosofi_zone, zone_etude)
+grille_communes <- st_join(grille_zone, zone_etude_proj["nom_officiel"])
 
 # Affichage par commune
-plot(st_geometry(zone_etude), 
+plot(st_geometry(zone_etude_proj), 
      col = NA, border = "black", lwd = 2,
      main = "Carreau Filosofi découpé par commune")
-plot(st_geometry(filosofi_communes[filosofi_communes$nom_officiel == "Roscoff", ]),
+plot(st_geometry(grille_communes[!is.na(grille_communes$nom_officiel) & 
+                                  grille_communes$nom_officiel == "Roscoff", ]),
      col = "#bfdbfe", border = "#3b82f6", add = TRUE)
-plot(st_geometry(filosofi_communes[filosofi_communes$nom_officiel == "Plougasnou", ]),
+plot(st_geometry(grille_communes[!is.na(grille_communes$nom_officiel) & 
+                                  grille_communes$nom_officiel == "Plougasnou", ]),
      col = "#fed7aa", border = "#f97316", add = TRUE)
 legend("topright", 
        legend = c("Roscoff", "Plougasnou"),
