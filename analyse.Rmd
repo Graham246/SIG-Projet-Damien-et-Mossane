@@ -5,6 +5,13 @@ date: "2026-05-13"
 output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(sf)
+library(terra)
+library(happign)
+```
+
 ## L'Analyse de l'intervisibilité
 
 Dans notre analyse, le **MNT** a permis de prouver une différence majeure entre les deux communes.
@@ -13,7 +20,71 @@ Même si la distance à la côte est la même, la topographie diffère : **Rosco
 
 Alors que **Plougasnou possède un relief plus accidenté** (falaises, pointes) ce qui crée des "zones d'ombre". Une partie importante de la population résidant en retrait de la côte ou dans les dépressions topographiques **n'aura aucune vue directe sur les machines**. Les éoliennes peuvent être visibles depuis certains sommets, mais totalement masquées pour les habitants vivant dans les creux de vallons.
 
-*[barplot visibilité]*
+## Barplot de visibilité
+
+```{r barplot}
+# Zone d'étude
+point <- st_sfc(st_point(c(-3.85, 48.65)), crs = 4326)
+zone <- st_buffer(st_transform(point, 2154), 20000)
+
+# Téléchargement MNT et communes
+mnt <- get_wms_raster(x = zone,
+                      layer = "ELEVATION.ELEVATIONGRIDCOVERAGE.HIGHRES",
+                      res = 25,
+                      crs = 2154)
+
+communes <- get_wfs(x = zone,
+                    layer = "ADMINEXPRESS-COG-CARTO.LATEST:commune")
+zone_etude <- communes[communes$nom_officiel %in% c("Roscoff", "Plougasnou"), ]
+
+# Point éolienne
+eolienne_sfc <- st_sfc(st_point(c(-3.95, 48.72)), crs = 4326)
+eolienne_proj <- st_transform(eolienne_sfc, 2154)
+eolienne <- st_sf(geometry = eolienne_proj)
+
+# Calcul viewshed
+coords <- st_coordinates(eolienne)
+visibilite <- viewshed(mnt,
+                       loc = c(coords[1], coords[2]),
+                       observer = 180,
+                       target = 1.75)
+
+# Découpage par commune
+roscoff <- zone_etude[zone_etude$nom_officiel == "Roscoff", ]
+plougasnou <- zone_etude[zone_etude$nom_officiel == "Plougasnou", ]
+
+roscoff_vect <- project(vect(roscoff), crs(visibilite))
+plougasnou_vect <- project(vect(plougasnou), crs(visibilite))
+
+visib_roscoff <- crop(visibilite, roscoff_vect, mask = TRUE)
+visib_plougasnou <- crop(visibilite, plougasnou_vect, mask = TRUE)
+
+# Calcul taux
+calc_taux <- function(r) {
+  f <- freq(r)
+  visible <- f$count[f$value == 1]
+  total <- sum(f$count)
+  if (length(visible) == 0) return(0)
+  round((visible / total) * 100, 1)
+}
+
+taux_roscoff <- calc_taux(visib_roscoff)
+taux_plougasnou <- calc_taux(visib_plougasnou)
+
+# Barplot
+barplot(c(taux_roscoff, taux_plougasnou),
+        names.arg = c("Roscoff", "Plougasnou"),
+        col = c("#2196F3", "#FF9800"),
+        main = "Taux de visibilité de l'éolienne par commune",
+        ylab = "% du territoire avec vue sur l'éolienne",
+        ylim = c(0, 100),
+        border = NA)
+abline(h = seq(0, 100, 20), col = "grey90", lty = 2)
+text(x = c(0.7, 1.9),
+     y = c(taux_roscoff + 3, taux_plougasnou + 3),
+     labels = paste0(c(taux_roscoff, taux_plougasnou), "%"),
+     font = 2)
+```
 
 L'opposition à Plougasnou est donc plus localisée (riverains directs), tandis qu'à Roscoff, elle est globale car elle touche à l'image de marque de la cité.
 
