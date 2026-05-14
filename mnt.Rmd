@@ -1,7 +1,6 @@
 ---
 title: "Modèle Numérique de Terrain"
 author: "Damien Ribeiro et Mossane Kachama"
-date: "2026-05-13"
 output: html_document
 ---
 
