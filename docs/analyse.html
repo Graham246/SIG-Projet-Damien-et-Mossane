@@ -354,17 +354,17 @@ calc_taux &lt;- function(r) {
 taux_roscoff &lt;- calc_taux(visib_roscoff)
 taux_plougasnou &lt;- calc_taux(visib_plougasnou)
 
-barplot(c(taux_plougasnou, taux_roscoff),
-        names.arg = c(&quot;Plougasnou&quot;, &quot;Roscoff&quot;),
-        col = c(&quot;#FF9800&quot;, &quot;#2196F3&quot;),
+barplot(c(taux_roscoff, taux_plougasnou),
+        names.arg = c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;),
+        col = c(&quot;#2196F3&quot;, &quot;#FF9800&quot;),
         main = &quot;Taux de visibilité du parc éolien par commune&quot;,
         ylab = &quot;% du territoire avec vue sur le parc&quot;,
         ylim = c(0, 100),
         border = NA)
 abline(h = seq(0, 100, 20), col = &quot;grey90&quot;, lty = 2)
 text(x = c(0.7, 1.9),
-     y = c(taux_plougasnou + 3, taux_roscoff + 3),
-     labels = paste0(c(taux_plougasnou, taux_roscoff), &quot;%&quot;),
+     y = c(taux_roscoff + 3, taux_plougasnou + 3),
+     labels = paste0(c(taux_roscoff, taux_plougasnou), &quot;%&quot;),
      font = 2)</code></pre>
 <p><img src="analyse_files/figure-html/barplot-1.png" alt="" width="672" /></p>
 <p>L’opposition à Plougasnou est donc plus localisée (riverains
@@ -373,7 +373,7 @@ l’image de marque de la cité.</p>
 </div>
 <div id="carte-du-niveau-de-vie" class="section level2">
 <h2>Carte du niveau de vie</h2>
-<pre class="r"><code># Chargement depuis un chemin absolu hors du projet
+<pre class="r"><code># Chargement depuis Documents (hors projet)
 grille &lt;- st_read(&quot;C:/Users/damie/Documents/carreaux_200m_met.gpkg&quot;, quiet = TRUE)
 
 grille_proj &lt;- st_transform(grille, 2154)
@@ -394,17 +394,7 @@ plot(st_geometry(zone_etude_proj), add = TRUE, border = &quot;black&quot;, lwd =
 <p><img src="analyse_files/figure-html/filosofi-1.png" alt="" width="672" /></p>
 <pre class="r"><code>par(mfrow = c(1, 2))
 
-plougasnou_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp;
-                                      grille_communes$nom_officiel == &quot;Plougasnou&quot;, ]
-plot(plougasnou_grille[&quot;ind_snv&quot;],
-     main = &quot;Plougasnou&quot;,
-     pal = colorRampPalette(c(&quot;#f0f9ff&quot;, &quot;#0ea5e9&quot;, &quot;#0c4a6e&quot;)),
-     border = NA,
-     key.pos = 4)
-plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == &quot;Plougasnou&quot;, ]),
-     add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
-<p><img src="analyse_files/figure-html/filosofi-2.png" alt="" width="672" /></p>
-<pre class="r"><code>roscoff_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp;
+roscoff_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp;
                                    grille_communes$nom_officiel == &quot;Roscoff&quot;, ]
 plot(roscoff_grille[&quot;ind_snv&quot;],
      main = &quot;Roscoff&quot;,
@@ -412,6 +402,16 @@ plot(roscoff_grille[&quot;ind_snv&quot;],
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == &quot;Roscoff&quot;, ]),
+     add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
+<p><img src="analyse_files/figure-html/filosofi-2.png" alt="" width="672" /></p>
+<pre class="r"><code>plougasnou_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp;
+                                      grille_communes$nom_officiel == &quot;Plougasnou&quot;, ]
+plot(plougasnou_grille[&quot;ind_snv&quot;],
+     main = &quot;Plougasnou&quot;,
+     pal = colorRampPalette(c(&quot;#f0f9ff&quot;, &quot;#0ea5e9&quot;, &quot;#0c4a6e&quot;)),
+     border = NA,
+     key.pos = 4)
+plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == &quot;Plougasnou&quot;, ]),
      add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
 <p><img src="analyse_files/figure-html/filosofi-3.png" alt="" width="672" /></p>
 <pre class="r"><code>par(mfrow = c(1, 1))</code></pre>
