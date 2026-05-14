@@ -5,69 +5,28 @@ date: "2026-05-13"
 output: html_document
 ---
 
-## I. Analyse socio-économique et conflits d'usages
+## L'Analyse de l'intervisibilité
 
-Bien que Roscoff et Plougasnou partagent le même potentiel éolien, leurs dynamiques sociales sont très différentes. Trois facteurs expliquent cette divergence.
+Dans notre analyse, le **MNT** a permis de prouver une différence majeure entre les deux communes.
 
-### La structure de l'économie locale
+Même si la distance à la côte est la même, la topographie diffère : **Roscoff est relativement plat,** la topographie est celle d'un plateau littoral. La visibilité du parc éolien est quasi-totale depuis le centre historique et le port. L'éolienne n'est pas seulement un objet lointain, **elle devient un nouvel élément de l'horizon** qui entre en concurrence directe avec le clocher de Notre-Dame-de-Croaz-Batz. La vue sur mer est omniprésente depuis le centre-ville.
 
-| Commune | Économie maritime | Perception du projet |
-|---------|------------------|---------------------|
-| **Roscoff** | Port de commerce, pêche industrielle, recherche marine | Opportunité de diversification industrielle |
-| **Plougasnou** | Pêche artisanale côtière (Le Diben) | "Privatisation" des zones de casiers |
+Alors que **Plougasnou possède un relief plus accidenté** (falaises, pointes) ce qui crée des "zones d'ombre". Une partie importante de la population résidant en retrait de la côte ou dans les dépressions topographiques **n'aura aucune vue directe sur les machines**. Les éoliennes peuvent être visibles depuis certains sommets, mais totalement masquées pour les habitants vivant dans les creux de vallons.
 
-### Le poids du patrimoine et du tourisme
+*[barplot visibilité]*
 
-| Commune | Enjeu patrimonial | Type d'opposition |
-|---------|------------------|-------------------|
-| **Roscoff** | Clocher Notre-Dame-de-Croaz-Batz, "Petite Cité de Caractère" | Pollution visuelle, dégradation du label touristique |
-| **Plougasnou** | Pointe de Primel, paysage côtier naturel | Rupture d'un paysage préservé |
+L'opposition à Plougasnou est donc plus localisée (riverains directs), tandis qu'à Roscoff, elle est globale car elle touche à l'image de marque de la cité.
 
-### La sociologie des résidents
+*[cartes carroyage résidence secondaire]*
 
-- **Résidences secondaires** : un fort taux réduit l'acceptabilité (sensibilité à la valeur immobilière)
-- **Âge de la population** : les retraités ont une vision "patrimoniale" du paysage
+Ensuite, on observe une corrélation entre **visibilité** et enjeux **socio-économiques**, lorsque l'on fait le croisement avec le **carroyage Filosofi**. Les zones ayant la plus forte visibilité sur le parc coïncident souvent avec les quartiers à haut taux de résidences secondaires (comme le front de mer). Pour ces propriétaires, pour qui l'éolien est perçu comme une **nuisance visuelle**, on comprend que l'enjeu de la visibilité est primordial et peut devenir l'un des premiers motifs d'opposition à l'implantation éolienne.
 
 ---
 
-## II. Synthèse territoriale
+## Conclusion
 
-| Critère | Roscoff | Plougasnou |
-|---------|---------|------------|
-| Potentiel éolien | ✅ Élevé | ✅ Élevé |
-| Relief | Plat → forte visibilité | Accidenté → visibilité partielle |
-| Patrimoine bâti classé | Dense | Limité |
-| Pêche artisanale | Secondaire | Primaire |
-| Résidences secondaires | Modéré | Élevé |
-| Opposition attendue | Patrimoniale et industrielle | Naturelle et économique |
+L'analyse spatiale croisée révèle que l'acceptabilité sociale dans le Finistère n'est pas distribuée de manière aléatoire, mais répond à une logique de **pression foncière et de visibilité**.
 
-### Hypothèses vérifiables par le SIG
+Le carroyage **Filosofi** permet de confirmer que les zones à forte concentration de **résidences secondaires** se situent précisément sur les lignes de front visuel. Pour les propriétaires, dont l'investissement est avant tout lié à la "valeur de contemplation", le projet éolien est perçu comme une dépréciation directe de leur patrimoine. En définitive, le niveau d'acceptabilité est inversement proportionnel à l'exposition visuelle des zones à haute valeur immobilière : là où le relief ne peut servir de bouclier, **la résidence secondaire devient le principal foyer de contestation**.
 
-1. **Hypothèse visibilité** : Le viewshed couvre une plus grande surface habitée à Roscoff
-2. **Hypothèse économique** : Les zones de pêche de Plougasnou chevauchent davantage le parc BNO
-3. **Hypothèse sociologique** : Le taux de résidences secondaires est corrélé avec l'intensité de l'opposition
-
----
-
-## III. Conclusion
-
-Cette étude comparative illustre une réalité fondamentale : **le potentiel technique ne suffit pas à garantir l'acceptabilité sociale**.
-
-Notre SIG a démontré que :
-
-- Les deux communes présentent un potentiel éolien **équivalent**
-- Pourtant, les **facteurs d'opposition** sont radicalement différents
-- L'acceptabilité est un phénomène **territorialement situé**
-
-### Les apports de l'approche SIG
-
-1. **Quantifier** l'intervisibilité depuis les zones habitées
-2. **Cartographier** les conflits d'usages (zones de pêche, patrimoine)
-3. **Croiser** des données hétérogènes (physiques, sociales, économiques)
-4. **Spatialiser** les dynamiques d'opposition locale
-
-### Conclusion générale
-
-La Baie de Morlaix constitue un **laboratoire géographique** idéal pour comprendre les mécanismes de l'acceptabilité éolienne. Toute politique de déploiement éolien doit impérativement intégrer une **analyse territoriale fine**, prenant en compte les spécificités économiques, patrimoniales et sociologiques de chaque commune.
-
-> *"L'espace n'est pas un simple contenant neutre : il est chargé d'histoires, d'usages et d'identités qui conditionnent l'acceptation ou le rejet de toute transformation du paysage."*
+Le SIG démontre que le potentiel éolien est une donnée **physique**, mais que l'acceptabilité est une donnée **territoriale**. Pour réussir l'implantation d'un projet, il ne suffit pas de calculer la force du vent : il faut comprendre la structure invisible des usages et la sensibilité des lignes de crête.
