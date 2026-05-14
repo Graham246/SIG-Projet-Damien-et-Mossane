@@ -2,7 +2,9 @@
 title: "Les données mobilisées"
 author: "Damien Ribeiro et Mossane Kachama"
 date: "2026-05-13"
-output: html_document
+output:
+  html_document:
+    self_contained: true
 ---
 
 ```{r setup, include=FALSE}
@@ -54,7 +56,35 @@ plot(st_geometry(zone_etude),
 | MNT | BD ALTI — IGN | Calcul des viewsheds |
 | Potentiel éolien | Global Wind Atlas | Potentiel équivalent |
 
-## D. Le format GeoPackage (.gpkg)
+## D. Schéma du géotraitement
+
+```{r mermaid, echo=FALSE}
+DiagrammeR::mermaid("
+flowchart TD
+    Start([Analyse Géotraitement<br/>Plougasnou vs Roscoff]) --> BranchA[Branche A:<br/>Analyse Physique]
+    Start --> BranchB[Branche B:<br/>Analyse Socio-Économique]
+    
+    BranchA --> InputA1[INPUT Raster:<br/>MNT RGE Alti<br/>via happign]
+    BranchA --> InputA2[INPUT Vecteur:<br/>Emplacement Éoliennes<br/>Points]
+    InputA1 --> TraitA[TRAITEMENT terra:<br/>Calcul Viewshed<br/>Bassin de visibilité]
+    InputA2 --> TraitA
+    TraitA --> OutputA[OUTPUT:<br/>Raster Visibilité<br/>Pixel: 1=vu, 0=non-vu]
+    
+    BranchB --> InputB1[INPUT Vecteur:<br/>Carroyage Filosofi 200m<br/>INSEE]
+    BranchB --> InputB2[INPUT Vecteur:<br/>Limites Communales<br/>via happign]
+    InputB1 --> TraitB1[TRAITEMENT sf:<br/>Découpage<br/>st_intersection]
+    InputB2 --> TraitB1
+    TraitB1 --> TraitB2[Jointure Attributaire<br/>left_join<br/>Revenus + Résidences sec.]
+    TraitB2 --> OutputB[OUTPUT:<br/>Carroyage Enrichi<br/>Données Socio-Éco]
+    
+    OutputA --> Convergence[Convergence:<br/>Synthèse Spatiale]
+    OutputB --> Convergence
+    Convergence --> Cross[CROISEMENT:<br/>Superposition<br/>Raster Visibilité +<br/>Carroyage Enrichi]
+    Cross --> Final([RÉSULTAT FINAL:<br/>Carte Synthétique<br/>Visibilité + Résidences sec.<br/>+ Revenus])
+")
+```
+
+## E. Le format GeoPackage (.gpkg)
 
 ```{r gpkg, eval=FALSE}
 # Sauvegarde dans un GeoPackage
