@@ -47,3 +47,4 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 data/carreaux_200m_met.gpkg
+docs/data/
