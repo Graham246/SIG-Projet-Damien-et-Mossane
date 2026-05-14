@@ -312,41 +312,61 @@ mnt &lt;- get_wms_raster(x = zone,
      col = terrain.colors(100))</code></pre>
 <p><img src="mnt_files/figure-html/mnt-1.png" alt="" width="672" /></p>
 </div>
-<div id="zone-détude-et-emplacement-de-léolienne"
-class="section level2">
-<h2>3. Zone d’étude et emplacement de l’éolienne</h2>
+<div id="zone-détude-et-parc-éolien-offshore" class="section level2">
+<h2>3. Zone d’étude et parc éolien offshore</h2>
 <pre class="r"><code>communes &lt;- get_wfs(x = zone,
                     layer = &quot;ADMINEXPRESS-COG-CARTO.LATEST:commune&quot;)
 zone_etude &lt;- communes[communes$nom_officiel %in% c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;), ]
 
-eolienne_sfc &lt;- st_sfc(st_point(c(-3.95, 48.72)), crs = 4326)
-eolienne_proj &lt;- st_transform(eolienne_sfc, 2154)
-eolienne &lt;- st_sf(geometry = eolienne_proj)
-eolienne$hauteur &lt;- 180
+# Parc éolien offshore avec plusieurs éoliennes
+coords_eoliennes &lt;- data.frame(
+  lon = c(-3.95, -3.98, -4.01, -3.92, -3.88),
+  lat = c(48.72, 48.74, 48.71, 48.75, 48.73)
+)
+eoliennes_sfc &lt;- st_sfc(
+  lapply(1:nrow(coords_eoliennes), function(i) {
+    st_point(c(coords_eoliennes$lon[i], coords_eoliennes$lat[i]))
+  }), crs = 4326)
+eoliennes &lt;- st_sf(geometry = st_transform(eoliennes_sfc, 2154))
+eoliennes$hauteur &lt;- 180
 
-plot(mnt, main = &quot;Zone d&#39;étude et emplacement de l&#39;éolienne&quot;,
+# Visualisation
+plot(mnt, main = &quot;Parc éolien offshore — Baie de Morlaix&quot;,
      col = terrain.colors(100))
 plot(st_geometry(zone_etude), add = TRUE, border = &quot;black&quot;, lwd = 2)
-plot(st_geometry(eolienne), add = TRUE, col = &quot;red&quot;, pch = 17, cex = 2)
-legend(&quot;topright&quot;, legend = c(&quot;Communes&quot;, &quot;Éolienne offshore&quot;),
+plot(st_geometry(eoliennes), add = TRUE, col = &quot;red&quot;, pch = 17, cex = 1.5)
+legend(&quot;topright&quot;, legend = c(&quot;Communes&quot;, &quot;Éoliennes offshore&quot;),
        col = c(&quot;black&quot;, &quot;red&quot;), lty = c(1, NA), pch = c(NA, 17))</code></pre>
 <p><img src="mnt_files/figure-html/eoliennes-1.png" alt="" width="672" /></p>
 </div>
-<div id="calcul-du-viewshed" class="section level2">
-<h2>4. Calcul du Viewshed</h2>
-<pre class="r"><code>coords &lt;- st_coordinates(eolienne)
-visibilite &lt;- viewshed(mnt,
-                       loc = c(coords[1], coords[2]),
-                       observer = 180,
-                       target = 1.75)
+<div id="calcul-du-viewshed-du-parc" class="section level2">
+<h2>4. Calcul du Viewshed du parc</h2>
+<pre class="r"><code># Calcul du viewshed pour chaque éolienne
+visibilite_list &lt;- lapply(1:nrow(eoliennes), function(i) {
+  coords &lt;- st_coordinates(eoliennes[i, ])
+  viewshed(mnt,
+           loc = c(coords[1], coords[2]),
+           observer = 180,
+           target = 1.75)
+})
 
+# Union des viewsheds
+visibilite &lt;- visibilite_list[[1]]
+for (i in 2:length(visibilite_list)) {
+  visibilite &lt;- max(visibilite, visibilite_list[[i]])
+}
+
+# Visualisation
 plot(visibilite,
-     main = &quot;Bassin de visibilité de l&#39;éolienne&quot;,
+     main = &quot;Bassin de visibilité du parc éolien&quot;,
      col = c(&quot;#f1f5f9&quot;, &quot;#ef4444&quot;),
      legend = FALSE)
 plot(st_geometry(zone_etude), add = TRUE, border = &quot;black&quot;, lwd = 2)
-legend(&quot;topright&quot;, legend = c(&quot;Non visible&quot;, &quot;Visible&quot;),
-       fill = c(&quot;#f1f5f9&quot;, &quot;#ef4444&quot;))</code></pre>
+plot(st_geometry(eoliennes), add = TRUE, col = &quot;blue&quot;, pch = 17, cex = 1.5)
+legend(&quot;topright&quot;, legend = c(&quot;Non visible&quot;, &quot;Visible&quot;, &quot;Éoliennes&quot;),
+       fill = c(&quot;#f1f5f9&quot;, &quot;#ef4444&quot;, NA),
+       pch = c(NA, NA, 17),
+       col = c(NA, NA, &quot;blue&quot;))</code></pre>
 <p><img src="mnt_files/figure-html/viewshed-1.png" alt="" width="672" /></p>
 </div>
 <div id="analyse-comparative-roscoff-vs-plougasnou"
@@ -379,9 +399,9 @@ resultats &lt;- data.frame(
 
 knitr::kable(resultats,
              col.names = c(&quot;Commune&quot;, &quot;Taux de visibilité (%)&quot;),
-             caption = &quot;Pourcentage du territoire avec vue sur l&#39;éolienne&quot;)</code></pre>
+             caption = &quot;Pourcentage du territoire avec vue sur le parc éolien&quot;)</code></pre>
 <table>
-<caption>Pourcentage du territoire avec vue sur l’éolienne</caption>
+<caption>Pourcentage du territoire avec vue sur le parc éolien</caption>
 <thead>
 <tr class="header">
 <th align="left">Commune</th>
@@ -391,11 +411,11 @@ knitr::kable(resultats,
 <tbody>
 <tr class="odd">
 <td align="left">Roscoff</td>
-<td align="right">0.7</td>
+<td align="right">95.6</td>
 </tr>
 <tr class="even">
 <td align="left">Plougasnou</td>
-<td align="right">0.2</td>
+<td align="right">73.7</td>
 </tr>
 </tbody>
 </table>
