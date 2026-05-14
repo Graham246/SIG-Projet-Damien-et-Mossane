@@ -36,7 +36,6 @@ Avant d'analyser les divergences, notre SIG montre que le socle physique est ide
 
 ## Sommaire de l'étude
 
-1. [Les données mobilisées](zones.html) — vecteurs et rasters
-2. [Analyse sociale](conflits.html) — conflits d'usages et acceptabilité
-3. [Synthèse territoriale](croisement.html) — croisement des analyses
-4. [Conclusion](conclusion.html)
+1. [Les données mobilisées](zones.html) — vecteurs, rasters et GeoPackage
+2. [Modèle Numérique de Terrain](mnt.html) — viewsheds et intervisibilité
+3. [Analyse et synthèse](analyse.html) — conflits d'usages, sociologie et conclusion
