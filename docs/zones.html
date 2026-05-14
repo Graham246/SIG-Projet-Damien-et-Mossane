@@ -283,8 +283,66 @@ $(document).ready(function () {
 <div id="les-deux-types-de-données-géographiques"
 class="section level2">
 <h2>Les deux types de données géographiques</h2>
-<p>Pour répondre à notre problématique, nous mobilisons deux types de
-données.</p>
+<p>Nous avons mobilisé deux types de données géographiques pour répondre
+à notre problématique : les vecteurs et les rasters.</p>
+<div id="récapitulatif-des-données" class="section level3">
+<h3>Récapitulatif des données</h3>
+<table>
+<colgroup>
+<col width="14%" />
+<col width="10%" />
+<col width="14%" />
+<col width="23%" />
+<col width="37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Donnée</th>
+<th>Type</th>
+<th>Format</th>
+<th>Librairie R</th>
+<th>Rôle dans le projet</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>MNT (RGE Alti)</strong></td>
+<td>Raster</td>
+<td>.tif / SpatRaster</td>
+<td>terra</td>
+<td>Modéliser le relief et les zones d’ombre.</td>
+</tr>
+<tr class="even">
+<td><strong>Contours Communaux</strong></td>
+<td>Vecteur</td>
+<td>.gpkg / sf</td>
+<td>sf</td>
+<td>Délimiter la zone d’étude (Roscoff/Plougasnou).</td>
+</tr>
+<tr class="odd">
+<td><strong>Carroyage Filosofi</strong></td>
+<td>Vecteur</td>
+<td>.shp / .gpkg</td>
+<td>sf</td>
+<td>Analyser la population à fine échelle (200m).</td>
+</tr>
+<tr class="even">
+<td><strong>Données INSEE</strong></td>
+<td>Table</td>
+<td>.csv / .xlsx</td>
+<td>base / dplyr</td>
+<td>Contenir les variables (âge, résidences sec.).</td>
+</tr>
+<tr class="odd">
+<td><strong>Monuments Hist.</strong></td>
+<td>Vecteur</td>
+<td>.gpkg</td>
+<td>sf</td>
+<td>Identifier les points de vue sensibles (clochers).</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 <div id="a.-téléchargement-des-limites-administratives"
 class="section level2">
@@ -350,88 +408,13 @@ legend(&quot;topright&quot;,
        legend = c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;),
        fill = c(&quot;#bfdbfe&quot;, &quot;#fed7aa&quot;))</code></pre>
 </div>
-<div id="d.-les-données-vecteurs" class="section level2">
-<h2>D. Les données vecteurs</h2>
-<table>
-<colgroup>
-<col width="25%" />
-<col width="19%" />
-<col width="25%" />
-<col width="29%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Donnée</th>
-<th>Type</th>
-<th>Source</th>
-<th>Utilité</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Limites administratives</td>
-<td>Polygones</td>
-<td>IGN Admin Express</td>
-<td>Découper la zone d’étude</td>
-</tr>
-<tr class="even">
-<td>Carreau Filosofi 200m</td>
-<td>Polygones</td>
-<td>INSEE</td>
-<td>Revenus et résidences secondaires</td>
-</tr>
-<tr class="odd">
-<td>Zones Natura 2000 / ZNIEFF</td>
-<td>Polygones</td>
-<td>INPN</td>
-<td>Contraintes environnementales</td>
-</tr>
-<tr class="even">
-<td>Patrimoine bâti</td>
-<td>Points/Polygones</td>
-<td>Base Mérimée</td>
-<td>Impact visuel</td>
-</tr>
-<tr class="odd">
-<td>Emprises de pêche</td>
-<td>Polygones</td>
-<td>Comités de pêche</td>
-<td>Conflits d’usages</td>
-</tr>
-</tbody>
-</table>
+<div id="d.-schéma-du-géotraitement" class="section level2">
+<h2>D. Schéma du géotraitement</h2>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-ce321bd9387896986da0" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-ce321bd9387896986da0">{"x":{"diagram":"\ndigraph geotraitement {\n  graph [layout = dot, rankdir = TB, fontname = \"Helvetica\"]\n  node [fontname = \"Helvetica\", fontsize = 11]\n\n  Start [label = \"Analyse Géotraitement\nPlougasnou vs Roscoff\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n  BranchA [label = \"Branche A:\nAnalyse Physique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n  BranchB [label = \"Branche B:\nAnalyse Socio-Économique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n  InputA1 [label = \"INPUT Raster:\nMNT RGE Alti\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputA2 [label = \"INPUT Vecteur:\nEmplacement Éoliennes\nPoints\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitA [label = \"TRAITEMENT terra:\nCalcul Viewshed\nBassin de visibilité\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputA [label = \"OUTPUT:\nRaster Visibilité\nPixel: 1=vu, 0=non-vu\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n  InputB1 [label = \"INPUT Vecteur:\nCarroyage Filosofi 200m\nINSEE\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputB2 [label = \"INPUT Vecteur:\nLimites Communales\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitB1 [label = \"TRAITEMENT sf:\nDécoupage\nst_intersection\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  TraitB2 [label = \"Jointure Attributaire\nleft_join\nRevenus + Résidences sec.\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputB [label = \"OUTPUT:\nCarroyage Enrichi\nDonnées Socio-Éco\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n  Convergence [label = \"Convergence:\nSynthèse Spatiale\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Cross [label = \"CROISEMENT:\nSuperposition\nRaster Visibilité +\nCarroyage Enrichi\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Final [label = \"RÉSULTAT FINAL:\nCarte Synthétique\nVisibilité + Résidences sec.\n+ Revenus\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n\n  Start -> BranchA\n  Start -> BranchB\n  BranchA -> InputA1\n  BranchA -> InputA2\n  InputA1 -> TraitA\n  InputA2 -> TraitA\n  TraitA -> OutputA\n  BranchB -> InputB1\n  BranchB -> InputB2\n  InputB1 -> TraitB1\n  InputB2 -> TraitB1\n  TraitB1 -> TraitB2\n  TraitB2 -> OutputB\n  OutputA -> Convergence\n  OutputB -> Convergence\n  Convergence -> Cross\n  Cross -> Final\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
-<div id="e.-les-données-rasters" class="section level2">
-<h2>E. Les données rasters</h2>
-<table>
-<thead>
-<tr class="header">
-<th>Donnée</th>
-<th>Source</th>
-<th>Utilité</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>MNT</td>
-<td>BD ALTI — IGN</td>
-<td>Calcul des viewsheds</td>
-</tr>
-<tr class="even">
-<td>Potentiel éolien</td>
-<td>Global Wind Atlas</td>
-<td>Potentiel équivalent</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="f.-schéma-du-géotraitement" class="section level2">
-<h2>F. Schéma du géotraitement</h2>
-<div class="grViz html-widget html-fill-item" id="htmlwidget-b28536852bef2bb3939e" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-b28536852bef2bb3939e">{"x":{"diagram":"\ndigraph geotraitement {\n  graph [layout = dot, rankdir = TB, fontname = \"Helvetica\"]\n  node [fontname = \"Helvetica\", fontsize = 11]\n\n  Start [label = \"Analyse Géotraitement\nPlougasnou vs Roscoff\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n  BranchA [label = \"Branche A:\nAnalyse Physique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n  BranchB [label = \"Branche B:\nAnalyse Socio-Économique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n  InputA1 [label = \"INPUT Raster:\nMNT RGE Alti\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputA2 [label = \"INPUT Vecteur:\nEmplacement Éoliennes\nPoints\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitA [label = \"TRAITEMENT terra:\nCalcul Viewshed\nBassin de visibilité\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputA [label = \"OUTPUT:\nRaster Visibilité\nPixel: 1=vu, 0=non-vu\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n  InputB1 [label = \"INPUT Vecteur:\nCarroyage Filosofi 200m\nINSEE\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputB2 [label = \"INPUT Vecteur:\nLimites Communales\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitB1 [label = \"TRAITEMENT sf:\nDécoupage\nst_intersection\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  TraitB2 [label = \"Jointure Attributaire\nleft_join\nRevenus + Résidences sec.\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputB [label = \"OUTPUT:\nCarroyage Enrichi\nDonnées Socio-Éco\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n  Convergence [label = \"Convergence:\nSynthèse Spatiale\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Cross [label = \"CROISEMENT:\nSuperposition\nRaster Visibilité +\nCarroyage Enrichi\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Final [label = \"RÉSULTAT FINAL:\nCarte Synthétique\nVisibilité + Résidences sec.\n+ Revenus\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n\n  Start -> BranchA\n  Start -> BranchB\n  BranchA -> InputA1\n  BranchA -> InputA2\n  InputA1 -> TraitA\n  InputA2 -> TraitA\n  TraitA -> OutputA\n  BranchB -> InputB1\n  BranchB -> InputB2\n  InputB1 -> TraitB1\n  InputB2 -> TraitB1\n  TraitB1 -> TraitB2\n  TraitB2 -> OutputB\n  OutputA -> Convergence\n  OutputB -> Convergence\n  Convergence -> Cross\n  Cross -> Final\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
-</div>
-<div id="g.-le-format-geopackage-.gpkg" class="section level2">
-<h2>G. Le format GeoPackage (.gpkg)</h2>
+<div id="e.-le-format-geopackage-.gpkg" class="section level2">
+<h2>E. Le format GeoPackage (.gpkg)</h2>
 <pre class="r"><code>st_write(zone_etude, &quot;data/projet_eolien.gpkg&quot;, 
          layer = &quot;communes&quot;, append = FALSE)</code></pre>
 <p>Toutes nos couches sont stockées dans un seul fichier

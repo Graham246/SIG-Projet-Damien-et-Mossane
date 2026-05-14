@@ -16,7 +16,17 @@ library(terra)
 
 ## Les deux types de données géographiques
 
-Pour répondre à notre problématique, nous mobilisons deux types de données.
+Nous avons mobilisé deux types de données géographiques pour répondre à notre problématique : les vecteurs et les rasters.
+
+### Récapitulatif des données
+
+| Donnée | Type | Format | Librairie R | Rôle dans le projet |
+|--------|------|--------|-------------|---------------------|
+| **MNT (RGE Alti)** | Raster | .tif / SpatRaster | terra | Modéliser le relief et les zones d'ombre. |
+| **Contours Communaux** | Vecteur | .gpkg / sf | sf | Délimiter la zone d'étude (Roscoff/Plougasnou). |
+| **Carroyage Filosofi** | Vecteur | .shp / .gpkg | sf | Analyser la population à fine échelle (200m). |
+| **Données INSEE** | Table | .csv / .xlsx | base / dplyr | Contenir les variables (âge, résidences sec.). |
+| **Monuments Hist.** | Vecteur | .gpkg | sf | Identifier les points de vue sensibles (clochers). |
 
 ## A. Téléchargement des limites administratives
 
@@ -84,24 +94,7 @@ legend("topright",
        fill = c("#bfdbfe", "#fed7aa"))
 ```
 
-## D. Les données vecteurs
-
-| Donnée | Type | Source | Utilité |
-|--------|------|--------|---------|
-| Limites administratives | Polygones | IGN Admin Express | Découper la zone d'étude |
-| Carreau Filosofi 200m | Polygones | INSEE | Revenus et résidences secondaires |
-| Zones Natura 2000 / ZNIEFF | Polygones | INPN | Contraintes environnementales |
-| Patrimoine bâti | Points/Polygones | Base Mérimée | Impact visuel |
-| Emprises de pêche | Polygones | Comités de pêche | Conflits d'usages |
-
-## E. Les données rasters
-
-| Donnée | Source | Utilité |
-|--------|--------|---------|
-| MNT | BD ALTI — IGN | Calcul des viewsheds |
-| Potentiel éolien | Global Wind Atlas | Potentiel équivalent |
-
-## F. Schéma du géotraitement
+## D. Schéma du géotraitement
 
 ```{r schema, echo=FALSE}
 library(DiagrammeR)
@@ -147,7 +140,7 @@ digraph geotraitement {
 ")
 ```
 
-## G. Le format GeoPackage (.gpkg)
+## E. Le format GeoPackage (.gpkg)
 
 ```{r gpkg, eval=FALSE}
 st_write(zone_etude, "data/projet_eolien.gpkg", 
