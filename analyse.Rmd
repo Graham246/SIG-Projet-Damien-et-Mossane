@@ -79,17 +79,17 @@ calc_taux <- function(r) {
 taux_roscoff <- calc_taux(visib_roscoff)
 taux_plougasnou <- calc_taux(visib_plougasnou)
 
-barplot(c(taux_plougasnou, taux_roscoff),
-        names.arg = c("Plougasnou", "Roscoff"),
-        col = c("#FF9800", "#2196F3"),
+barplot(c(taux_roscoff, taux_plougasnou),
+        names.arg = c("Roscoff", "Plougasnou"),
+        col = c("#2196F3", "#FF9800"),
         main = "Taux de visibilité du parc éolien par commune",
         ylab = "% du territoire avec vue sur le parc",
         ylim = c(0, 100),
         border = NA)
 abline(h = seq(0, 100, 20), col = "grey90", lty = 2)
 text(x = c(0.7, 1.9),
-     y = c(taux_plougasnou + 3, taux_roscoff + 3),
-     labels = paste0(c(taux_plougasnou, taux_roscoff), "%"),
+     y = c(taux_roscoff + 3, taux_plougasnou + 3),
+     labels = paste0(c(taux_roscoff, taux_plougasnou), "%"),
      font = 2)
 ```
 
@@ -98,7 +98,7 @@ L'opposition à Plougasnou est donc plus localisée (riverains directs), tandis 
 ## Carte du niveau de vie
 
 ```{r filosofi}
-# Chargement depuis un chemin absolu hors du projet
+# Chargement depuis Documents (hors projet)
 grille <- st_read("C:/Users/damie/Documents/carreaux_200m_met.gpkg", quiet = TRUE)
 
 grille_proj <- st_transform(grille, 2154)
@@ -119,16 +119,6 @@ plot(st_geometry(zone_etude_proj), add = TRUE, border = "black", lwd = 2)
 
 par(mfrow = c(1, 2))
 
-plougasnou_grille <- grille_communes[!is.na(grille_communes$nom_officiel) &
-                                      grille_communes$nom_officiel == "Plougasnou", ]
-plot(plougasnou_grille["ind_snv"],
-     main = "Plougasnou",
-     pal = colorRampPalette(c("#f0f9ff", "#0ea5e9", "#0c4a6e")),
-     border = NA,
-     key.pos = 4)
-plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == "Plougasnou", ]),
-     add = TRUE, border = "black", lwd = 2)
-
 roscoff_grille <- grille_communes[!is.na(grille_communes$nom_officiel) &
                                    grille_communes$nom_officiel == "Roscoff", ]
 plot(roscoff_grille["ind_snv"],
@@ -137,6 +127,16 @@ plot(roscoff_grille["ind_snv"],
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == "Roscoff", ]),
+     add = TRUE, border = "black", lwd = 2)
+
+plougasnou_grille <- grille_communes[!is.na(grille_communes$nom_officiel) &
+                                      grille_communes$nom_officiel == "Plougasnou", ]
+plot(plougasnou_grille["ind_snv"],
+     main = "Plougasnou",
+     pal = colorRampPalette(c("#f0f9ff", "#0ea5e9", "#0c4a6e")),
+     border = NA,
+     key.pos = 4)
+plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == "Plougasnou", ]),
      add = TRUE, border = "black", lwd = 2)
 
 par(mfrow = c(1, 1))
