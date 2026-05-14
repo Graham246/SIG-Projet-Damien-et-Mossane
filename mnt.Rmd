@@ -5,29 +5,119 @@ date: "2026-05-13"
 output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(sf)
+library(terra)
+library(happign)
+```
+
 ## Le MNT : donnée fondamentale de notre analyse
 
 Le Modèle Numérique de Terrain (MNT) est issu de la **BD ALTI de l'IGN**. Chaque pixel contient l'altitude du terrain, ce qui permet de modéliser le relief des communes de Roscoff et Plougasnou.
 
-## Pourquoi le MNT est central dans notre projet ?
+## 1. Téléchargement du MNT via happign
 
-Le MNT permet de calculer des **"Viewsheds"** (bassins de visibilité) : depuis quels endroits les éoliennes offshore seraient-elles visibles ?
+```{r mnt}
+# Zone d'étude centrée sur la Baie de Morlaix
+point <- st_sfc(st_point(c(-3.85, 48.65)), crs = 4326)
+zone <- st_buffer(st_transform(point, 2154), 20000)
 
-C'est une donnée clé car :
+# Téléchargement du MNT via get_wms_raster
+mnt <- get_wms_raster(x = zone,
+                      layer = "ELEVATION.ELEVATIONGRIDCOVERAGE.HIGHRES",
+                      res = 25,
+                      crs = 2154)
 
-- À **Roscoff** (relief plat) → la vue sur mer est omniprésente depuis le centre-ville
-- À **Plougasnou** (relief accidenté, falaises) → les éoliennes peuvent être masquées pour les habitants dans les vallons
+# Visualisation du MNT
+plot(mnt, 
+     main = "MNT de la zone d'étude — Baie de Morlaix",
+     col = terrain.colors(100))
+```
 
-## Hypothèse vérifiée par le MNT
+## 2. Création des points éoliennes
 
-**Moins d'habitants voient les éoliennes à Plougasnou qu'à Roscoff**, ce qui réduit mécaniquement la base de l'opposition sociale.
+```{r eoliennes}
+# Communes de Roscoff et Plougasnou
+communes <- get_wfs(x = zone,
+                    layer = "ADMINEXPRESS-COG-CARTO.LATEST:commune")
+zone_etude <- communes[communes$nom_officiel %in% c("Roscoff", "Plougasnou"), ]
 
-## Traitements réalisés
+# Point éolienne au large de la Baie de Morlaix
+eolienne_sfc <- st_sfc(st_point(c(-3.95, 48.72)), crs = 4326)
+eolienne_proj <- st_transform(eolienne_sfc, 2154)
+eolienne <- st_sf(geometry = eolienne_proj)
+eolienne$hauteur <- 180
 
-1. **Chargement du MNT** via le package `terra` dans R
-2. **Calcul du viewshed** depuis la position projetée du parc BNO
-3. **Croisement** avec la couche de bâti pour estimer la population exposée visuellement
+# Visualisation
+plot(mnt, main = "Zone d'étude et emplacement de l'éolienne",
+     col = terrain.colors(100))
+plot(st_geometry(zone_etude), add = TRUE, border = "black", lwd = 2)
+plot(st_geometry(eolienne), add = TRUE, col = "red", pch = 17, cex = 2)
+legend("topright", legend = c("Communes", "Éolienne offshore"),
+       col = c("black", "red"), lty = c(1, NA), pch = c(NA, 17))
+```
 
-## Résultats
+## 3. Calcul du Viewshed
 
-*Les cartes et résultats seront intégrés ici une fois les traitements R finalisés.*
+```{r viewshed}
+# Calcul du viewshed
+coords <- st_coordinates(eolienne)
+visibilite <- viewshed(mnt,
+                       loc = c(coords[1], coords[2]),
+                       observer = 180,
+                       target = 1.75)
+
+# Visualisation
+plot(visibilite,
+     main = "Bassin de visibilité de l'éolienne",
+     col = c("#f1f5f9", "#ef4444"),
+     legend = FALSE)
+plot(st_geometry(zone_etude), add = TRUE, border = "black", lwd = 2)
+legend("topright", legend = c("Non visible", "Visible"),
+       fill = c("#f1f5f9", "#ef4444"))
+```
+
+## 4. Analyse comparative Roscoff vs Plougasnou
+
+```{r comparaison}
+# Reprojection des communes en SpatVector pour terra
+roscoff <- zone_etude[zone_etude$nom_officiel == "Roscoff", ]
+plougasnou <- zone_etude[zone_etude$nom_officiel == "Plougasnou", ]
+
+# Conversion en SpatVector et reprojection
+roscoff_vect <- project(vect(roscoff), crs(visibilite))
+plougasnou_vect <- project(vect(plougasnou), crs(visibilite))
+
+# Découpage
+visib_roscoff <- crop(visibilite, roscoff_vect, mask = TRUE)
+visib_plougasnou <- crop(visibilite, plougasnou_vect, mask = TRUE)
+
+# Calcul du taux de visibilité
+calc_taux <- function(r) {
+  f <- freq(r)
+  visible <- f$count[f$value == 1]
+  total <- sum(f$count)
+  if (length(visible) == 0) return(0)
+  round((visible / total) * 100, 1)
+}
+
+taux_roscoff <- calc_taux(visib_roscoff)
+taux_plougasnou <- calc_taux(visib_plougasnou)
+
+resultats <- data.frame(
+  Commune = c("Roscoff", "Plougasnou"),
+  Taux_visibilite = c(taux_roscoff, taux_plougasnou)
+)
+
+knitr::kable(resultats,
+             col.names = c("Commune", "Taux de visibilité (%)"),
+             caption = "Pourcentage du territoire avec vue sur l'éolienne")
+```
+
+## 5. Interprétation
+
+$$\text{Taux de visibilité} = \frac{\sum \text{Pixels visibles}}{\sum \text{Pixels totaux de la commune}} \times 100$$
+
+- **À Roscoff** : La carte montre une nappe de visibilité homogène sur l'ensemble du front de mer et du centre historique, confirmant la menace perçue sur le patrimoine bâti.
+- **À Plougasnou** : On observe des zones d'ombre importantes derrière la Pointe de Primel et dans les vallons encaissés. Le relief joue un rôle de bouclier naturel.
