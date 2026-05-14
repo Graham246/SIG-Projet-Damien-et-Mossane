@@ -12,7 +12,7 @@ library(terra)
 library(happign)
 ```
 
-## L'Analyse de l'intervisibilité
+## Analyse de l'intervisibilité
 
 Dans notre analyse, le **MNT** a permis de prouver une différence majeure entre les deux communes.
 
