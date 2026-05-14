@@ -373,8 +373,8 @@ text(x = c(0.7, 1.9),
 directs), tandis qu’à Roscoff, elle est globale car elle touche à
 l’image de marque de la cité.</p>
 </div>
-<div id="carte-des-résidences-secondaires" class="section level2">
-<h2>Carte des résidences secondaires</h2>
+<div id="carte-du-niveau-de-vie" class="section level2">
+<h2>Carte du niveau de vie</h2>
 <pre class="r"><code># Chargement du carreau Filosofi
 grille &lt;- st_read(&quot;data/carreaux_200m_met.gpkg&quot;, quiet = TRUE)
 
@@ -389,21 +389,13 @@ grille_communes &lt;- grille_proj[idx, ]
 # Jointure attributaire pour identifier la commune
 grille_communes &lt;- st_join(grille_communes, zone_etude_proj[&quot;nom_officiel&quot;])
 
-# Calcul de la part des résidences secondaires
-grille_communes$part_res_sec &lt;- ifelse(
-  grille_communes$log_inc &gt; 0,
-  (grille_communes$log_inc - grille_communes$men) / grille_communes$log_inc * 100,
-  NA
-)
-
-# Suppression des valeurs aberrantes
-grille_communes$part_res_sec[grille_communes$part_res_sec &lt; 0] &lt;- 0
-grille_communes$part_res_sec[grille_communes$part_res_sec &gt; 100] &lt;- 100
+# Nettoyage des valeurs manquantes
+grille_communes &lt;- grille_communes[!is.na(grille_communes$ind_snv), ]
 
 # Carte globale
-plot(grille_communes[&quot;part_res_sec&quot;],
-     main = &quot;Part des résidences secondaires — Roscoff et Plougasnou (200m)&quot;,
-     pal = colorRampPalette(c(&quot;#fff7ed&quot;, &quot;#f97316&quot;, &quot;#7c2d12&quot;)),
+plot(grille_communes[&quot;ind_snv&quot;],
+     main = &quot;Niveau de vie médian par carreau — Roscoff et Plougasnou (200m)&quot;,
+     pal = colorRampPalette(c(&quot;#f0f9ff&quot;, &quot;#0ea5e9&quot;, &quot;#0c4a6e&quot;)),
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj), add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
@@ -411,21 +403,21 @@ plot(st_geometry(zone_etude_proj), add = TRUE, border = &quot;black&quot;, lwd =
 <pre class="r"><code># Carte par commune
 par(mfrow = c(1, 2))
 
-roscoff_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp; 
+roscoff_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp;
                                    grille_communes$nom_officiel == &quot;Roscoff&quot;, ]
-plot(roscoff_grille[&quot;part_res_sec&quot;],
+plot(roscoff_grille[&quot;ind_snv&quot;],
      main = &quot;Roscoff&quot;,
-     pal = colorRampPalette(c(&quot;#fff7ed&quot;, &quot;#f97316&quot;, &quot;#7c2d12&quot;)),
+     pal = colorRampPalette(c(&quot;#f0f9ff&quot;, &quot;#0ea5e9&quot;, &quot;#0c4a6e&quot;)),
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == &quot;Roscoff&quot;, ]),
      add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
 <p><img src="analyse_files/figure-html/filosofi-2.png" alt="" width="672" /></p>
-<pre class="r"><code>plougasnou_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp; 
+<pre class="r"><code>plougasnou_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp;
                                       grille_communes$nom_officiel == &quot;Plougasnou&quot;, ]
-plot(plougasnou_grille[&quot;part_res_sec&quot;],
+plot(plougasnou_grille[&quot;ind_snv&quot;],
      main = &quot;Plougasnou&quot;,
-     pal = colorRampPalette(c(&quot;#fff7ed&quot;, &quot;#f97316&quot;, &quot;#7c2d12&quot;)),
+     pal = colorRampPalette(c(&quot;#f0f9ff&quot;, &quot;#0ea5e9&quot;, &quot;#0c4a6e&quot;)),
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == &quot;Plougasnou&quot;, ]),
@@ -455,15 +447,15 @@ la valeur d’un paysage.</p>
 Finistère n’est pas distribuée de manière aléatoire, mais répond à une
 logique de <strong>pression foncière et de visibilité</strong>.</p>
 <p>Le carroyage <strong>Filosofi</strong> permet de confirmer que les
-zones à forte concentration de <strong>résidences secondaires</strong>
-se situent précisément sur les lignes de front visuel. Pour les
-propriétaires possédant un niveau de vie élevé, et dont l’investissement
-est avant tout lié à la “valeur de contemplation”, le projet éolien est
-perçu comme une dépréciation directe de leur patrimoine. En définitive,
-le niveau d’acceptabilité est inversement proportionnel à l’exposition
-visuelle des zones à haute valeur immobilière : là où le relief ne peut
-servir de bouclier, <strong>la résidence secondaire devient le principal
-foyer de contestation</strong>.</p>
+zones à fort niveau de vie se situent précisément sur les lignes de
+front visuel. Pour les propriétaires possédant un niveau de vie élevé,
+et dont l’investissement est avant tout lié à la “valeur de
+contemplation”, le projet éolien est perçu comme une dépréciation
+directe de leur patrimoine. En définitive, le niveau d’acceptabilité est
+inversement proportionnel à l’exposition visuelle des zones à haute
+valeur immobilière : là où le relief ne peut servir de bouclier,
+<strong>la résidence secondaire devient le principal foyer de
+contestation</strong>.</p>
 <p>Le SIG démontre que le potentiel éolien est une donnée
 <strong>physique</strong>, mais que l’acceptabilité est une donnée
 <strong>territoriale</strong>. Lors de la mise en place de projets
