@@ -322,7 +322,7 @@ eoliennes_sfc &lt;- st_sfc(
 eoliennes &lt;- st_sf(geometry = st_transform(eoliennes_sfc, 2154))
 eoliennes$hauteur &lt;- 180
 
-# Calcul du viewshed combiné pour toutes les éoliennes
+# Calcul du viewshed combiné
 visibilite_list &lt;- lapply(1:nrow(eoliennes), function(i) {
   coords &lt;- st_coordinates(eoliennes[i, ])
   viewshed(mnt,
@@ -331,21 +331,11 @@ visibilite_list &lt;- lapply(1:nrow(eoliennes), function(i) {
            target = 1.75)
 })
 
-# Union des viewsheds
 visibilite &lt;- visibilite_list[[1]]
 for (i in 2:length(visibilite_list)) {
   visibilite &lt;- max(visibilite, visibilite_list[[i]])
 }
 
-# Visualisation du parc
-plot(mnt, main = &quot;Parc éolien offshore — Baie de Morlaix&quot;,
-     col = terrain.colors(100))
-plot(st_geometry(zone_etude), add = TRUE, border = &quot;black&quot;, lwd = 2)
-plot(st_geometry(eoliennes), add = TRUE, col = &quot;red&quot;, pch = 17, cex = 1.5)
-legend(&quot;topright&quot;, legend = c(&quot;Communes&quot;, &quot;Éoliennes offshore&quot;),
-       col = c(&quot;black&quot;, &quot;red&quot;), lty = c(1, NA), pch = c(NA, 17))</code></pre>
-<p><img src="analyse_files/figure-html/barplot-1.png" alt="" width="672" /></p>
-<pre class="r"><code># Découpage par commune
 roscoff &lt;- zone_etude[zone_etude$nom_officiel == &quot;Roscoff&quot;, ]
 plougasnou &lt;- zone_etude[zone_etude$nom_officiel == &quot;Plougasnou&quot;, ]
 
@@ -366,7 +356,6 @@ calc_taux &lt;- function(r) {
 taux_roscoff &lt;- calc_taux(visib_roscoff)
 taux_plougasnou &lt;- calc_taux(visib_plougasnou)
 
-# Barplot
 barplot(c(taux_roscoff, taux_plougasnou),
         names.arg = c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;),
         col = c(&quot;#2196F3&quot;, &quot;#FF9800&quot;),
@@ -379,32 +368,70 @@ text(x = c(0.7, 1.9),
      y = c(taux_roscoff + 3, taux_plougasnou + 3),
      labels = paste0(c(taux_roscoff, taux_plougasnou), &quot;%&quot;),
      font = 2)</code></pre>
-<p><img src="analyse_files/figure-html/barplot-2.png" alt="" width="672" /></p>
+<p><img src="analyse_files/figure-html/barplot-1.png" alt="" width="672" /></p>
 <p>L’opposition à Plougasnou est donc plus localisée (riverains
 directs), tandis qu’à Roscoff, elle est globale car elle touche à
 l’image de marque de la cité.</p>
 </div>
 <div id="carte-des-résidences-secondaires" class="section level2">
 <h2>Carte des résidences secondaires</h2>
-<pre class="r"><code>grille &lt;- st_read(&quot;data/carreaux_200m_met.gpkg&quot;, quiet = TRUE)
+<pre class="r"><code># Chargement du carreau Filosofi
+grille &lt;- st_read(&quot;data/carreaux_200m_met.gpkg&quot;, quiet = TRUE)
 
-grille_etude &lt;- st_transform(grille, 2154)
+# Reprojection en Lambert-93
+grille_proj &lt;- st_transform(grille, 2154)
 zone_etude_proj &lt;- st_transform(zone_etude, 2154)
 
-idx &lt;- st_intersects(grille_etude, st_union(zone_etude_proj), sparse = FALSE)[,1]
-grille_etude &lt;- grille_etude[idx, ]
+# Jointure spatiale avec les limites communales
+idx &lt;- st_intersects(grille_proj, st_union(zone_etude_proj), sparse = FALSE)[,1]
+grille_communes &lt;- grille_proj[idx, ]
 
-grille_etude$part_res_sec &lt;- (grille_etude$log_inc - grille_etude$men) / grille_etude$log_inc * 100
-grille_etude$part_res_sec &lt;- ifelse(is.na(grille_etude$part_res_sec), 
-                                     0, 
-                                     grille_etude$part_res_sec)
+# Jointure attributaire pour identifier la commune
+grille_communes &lt;- st_join(grille_communes, zone_etude_proj[&quot;nom_officiel&quot;])
 
-plot(grille_etude[&quot;part_res_sec&quot;],
-     main = &quot;Part des résidences secondaires (200m)&quot;,
+# Calcul de la part des résidences secondaires
+grille_communes$part_res_sec &lt;- ifelse(
+  grille_communes$log_inc &gt; 0,
+  (grille_communes$log_inc - grille_communes$men) / grille_communes$log_inc * 100,
+  NA
+)
+
+# Suppression des valeurs aberrantes
+grille_communes$part_res_sec[grille_communes$part_res_sec &lt; 0] &lt;- 0
+grille_communes$part_res_sec[grille_communes$part_res_sec &gt; 100] &lt;- 100
+
+# Carte globale
+plot(grille_communes[&quot;part_res_sec&quot;],
+     main = &quot;Part des résidences secondaires — Roscoff et Plougasnou (200m)&quot;,
      pal = colorRampPalette(c(&quot;#fff7ed&quot;, &quot;#f97316&quot;, &quot;#7c2d12&quot;)),
-     border = NA)
+     border = NA,
+     key.pos = 4)
 plot(st_geometry(zone_etude_proj), add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
 <p><img src="analyse_files/figure-html/filosofi-1.png" alt="" width="672" /></p>
+<pre class="r"><code># Carte par commune
+par(mfrow = c(1, 2))
+
+roscoff_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp; 
+                                   grille_communes$nom_officiel == &quot;Roscoff&quot;, ]
+plot(roscoff_grille[&quot;part_res_sec&quot;],
+     main = &quot;Roscoff&quot;,
+     pal = colorRampPalette(c(&quot;#fff7ed&quot;, &quot;#f97316&quot;, &quot;#7c2d12&quot;)),
+     border = NA,
+     key.pos = 4)
+plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == &quot;Roscoff&quot;, ]),
+     add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
+<p><img src="analyse_files/figure-html/filosofi-2.png" alt="" width="672" /></p>
+<pre class="r"><code>plougasnou_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp; 
+                                      grille_communes$nom_officiel == &quot;Plougasnou&quot;, ]
+plot(plougasnou_grille[&quot;part_res_sec&quot;],
+     main = &quot;Plougasnou&quot;,
+     pal = colorRampPalette(c(&quot;#fff7ed&quot;, &quot;#f97316&quot;, &quot;#7c2d12&quot;)),
+     border = NA,
+     key.pos = 4)
+plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == &quot;Plougasnou&quot;, ]),
+     add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
+<p><img src="analyse_files/figure-html/filosofi-3.png" alt="" width="672" /></p>
+<pre class="r"><code>par(mfrow = c(1, 1))</code></pre>
 <p>Ensuite, on observe une corrélation entre <strong>visibilité</strong>
 et enjeux <strong>socio-économiques</strong>, lorsque l’on fait le
 croisement avec le <strong>carroyage Filosofi.</strong> Les zones ayant

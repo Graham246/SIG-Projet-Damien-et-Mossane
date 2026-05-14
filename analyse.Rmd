@@ -47,7 +47,7 @@ eoliennes_sfc <- st_sfc(
 eoliennes <- st_sf(geometry = st_transform(eoliennes_sfc, 2154))
 eoliennes$hauteur <- 180
 
-# Calcul du viewshed combiné pour toutes les éoliennes
+# Calcul du viewshed combiné
 visibilite_list <- lapply(1:nrow(eoliennes), function(i) {
   coords <- st_coordinates(eoliennes[i, ])
   viewshed(mnt,
@@ -56,21 +56,11 @@ visibilite_list <- lapply(1:nrow(eoliennes), function(i) {
            target = 1.75)
 })
 
-# Union des viewsheds
 visibilite <- visibilite_list[[1]]
 for (i in 2:length(visibilite_list)) {
   visibilite <- max(visibilite, visibilite_list[[i]])
 }
 
-# Visualisation du parc
-plot(mnt, main = "Parc éolien offshore — Baie de Morlaix",
-     col = terrain.colors(100))
-plot(st_geometry(zone_etude), add = TRUE, border = "black", lwd = 2)
-plot(st_geometry(eoliennes), add = TRUE, col = "red", pch = 17, cex = 1.5)
-legend("topright", legend = c("Communes", "Éoliennes offshore"),
-       col = c("black", "red"), lty = c(1, NA), pch = c(NA, 17))
-
-# Découpage par commune
 roscoff <- zone_etude[zone_etude$nom_officiel == "Roscoff", ]
 plougasnou <- zone_etude[zone_etude$nom_officiel == "Plougasnou", ]
 
@@ -91,7 +81,6 @@ calc_taux <- function(r) {
 taux_roscoff <- calc_taux(visib_roscoff)
 taux_plougasnou <- calc_taux(visib_plougasnou)
 
-# Barplot
 barplot(c(taux_roscoff, taux_plougasnou),
         names.arg = c("Roscoff", "Plougasnou"),
         col = c("#2196F3", "#FF9800"),
@@ -111,24 +100,63 @@ L'opposition à Plougasnou est donc plus localisée (riverains directs), tandis 
 ## Carte des résidences secondaires
 
 ```{r filosofi}
+# Chargement du carreau Filosofi
 grille <- st_read("data/carreaux_200m_met.gpkg", quiet = TRUE)
 
-grille_etude <- st_transform(grille, 2154)
+# Reprojection en Lambert-93
+grille_proj <- st_transform(grille, 2154)
 zone_etude_proj <- st_transform(zone_etude, 2154)
 
-idx <- st_intersects(grille_etude, st_union(zone_etude_proj), sparse = FALSE)[,1]
-grille_etude <- grille_etude[idx, ]
+# Jointure spatiale avec les limites communales
+idx <- st_intersects(grille_proj, st_union(zone_etude_proj), sparse = FALSE)[,1]
+grille_communes <- grille_proj[idx, ]
 
-grille_etude$part_res_sec <- (grille_etude$log_inc - grille_etude$men) / grille_etude$log_inc * 100
-grille_etude$part_res_sec <- ifelse(is.na(grille_etude$part_res_sec), 
-                                     0, 
-                                     grille_etude$part_res_sec)
+# Jointure attributaire pour identifier la commune
+grille_communes <- st_join(grille_communes, zone_etude_proj["nom_officiel"])
 
-plot(grille_etude["part_res_sec"],
-     main = "Part des résidences secondaires (200m)",
+# Calcul de la part des résidences secondaires
+grille_communes$part_res_sec <- ifelse(
+  grille_communes$log_inc > 0,
+  (grille_communes$log_inc - grille_communes$men) / grille_communes$log_inc * 100,
+  NA
+)
+
+# Suppression des valeurs aberrantes
+grille_communes$part_res_sec[grille_communes$part_res_sec < 0] <- 0
+grille_communes$part_res_sec[grille_communes$part_res_sec > 100] <- 100
+
+# Carte globale
+plot(grille_communes["part_res_sec"],
+     main = "Part des résidences secondaires — Roscoff et Plougasnou (200m)",
      pal = colorRampPalette(c("#fff7ed", "#f97316", "#7c2d12")),
-     border = NA)
+     border = NA,
+     key.pos = 4)
 plot(st_geometry(zone_etude_proj), add = TRUE, border = "black", lwd = 2)
+
+# Carte par commune
+par(mfrow = c(1, 2))
+
+roscoff_grille <- grille_communes[!is.na(grille_communes$nom_officiel) & 
+                                   grille_communes$nom_officiel == "Roscoff", ]
+plot(roscoff_grille["part_res_sec"],
+     main = "Roscoff",
+     pal = colorRampPalette(c("#fff7ed", "#f97316", "#7c2d12")),
+     border = NA,
+     key.pos = 4)
+plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == "Roscoff", ]),
+     add = TRUE, border = "black", lwd = 2)
+
+plougasnou_grille <- grille_communes[!is.na(grille_communes$nom_officiel) & 
+                                      grille_communes$nom_officiel == "Plougasnou", ]
+plot(plougasnou_grille["part_res_sec"],
+     main = "Plougasnou",
+     pal = colorRampPalette(c("#fff7ed", "#f97316", "#7c2d12")),
+     border = NA,
+     key.pos = 4)
+plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == "Plougasnou", ]),
+     add = TRUE, border = "black", lwd = 2)
+
+par(mfrow = c(1, 1))
 ```
 
 Ensuite, on observe une corrélation entre **visibilité** et enjeux **socio-économiques**, lorsque l'on fait le croisement avec le **carroyage Filosofi.** Les zones ayant la plus forte visibilité sur le parc coïncident souvent avec les quartiers à où le niveau de vie est plus élevé (comme le front de mer). Pour ces propriétaires plus aisés, et dont le capital culturel peut être plus élevé par exemple, on comprend que **la valeur esthétique** accordée au cadre de vie est un enjeu principal et que la visibilité des éoliennes devient un motif important d'opposition au projet.
