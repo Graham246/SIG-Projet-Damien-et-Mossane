@@ -310,7 +310,6 @@ mnt &lt;- get_wms_raster(x = zone,
                     layer = &quot;ADMINEXPRESS-COG-CARTO.LATEST:commune&quot;)
 zone_etude &lt;- communes[communes$nom_officiel %in% c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;), ]
 
-# Parc éolien offshore avec plusieurs éoliennes
 coords_eoliennes &lt;- data.frame(
   lon = c(-3.95, -3.98, -4.01, -3.92, -3.88),
   lat = c(48.72, 48.74, 48.71, 48.75, 48.73)
@@ -322,7 +321,6 @@ eoliennes_sfc &lt;- st_sfc(
 eoliennes &lt;- st_sf(geometry = st_transform(eoliennes_sfc, 2154))
 eoliennes$hauteur &lt;- 180
 
-# Calcul du viewshed combiné
 visibilite_list &lt;- lapply(1:nrow(eoliennes), function(i) {
   coords &lt;- st_coordinates(eoliennes[i, ])
   viewshed(mnt,
@@ -375,33 +373,26 @@ l’image de marque de la cité.</p>
 </div>
 <div id="carte-du-niveau-de-vie" class="section level2">
 <h2>Carte du niveau de vie</h2>
-<pre class="r"><code># Chargement du carreau Filosofi
-grille &lt;- st_read(&quot;data/carreaux_200m_met.gpkg&quot;, quiet = TRUE)
+<pre class="r"><code># Chargement depuis un chemin absolu hors du projet
+grille &lt;- st_read(&quot;C:/Users/damie/Documents/carreaux_200m_met.gpkg&quot;, quiet = TRUE)
 
-# Reprojection en Lambert-93
 grille_proj &lt;- st_transform(grille, 2154)
 zone_etude_proj &lt;- st_transform(zone_etude, 2154)
 
-# Jointure spatiale avec les limites communales
 idx &lt;- st_intersects(grille_proj, st_union(zone_etude_proj), sparse = FALSE)[,1]
 grille_communes &lt;- grille_proj[idx, ]
 
-# Jointure attributaire pour identifier la commune
 grille_communes &lt;- st_join(grille_communes, zone_etude_proj[&quot;nom_officiel&quot;])
-
-# Nettoyage des valeurs manquantes
 grille_communes &lt;- grille_communes[!is.na(grille_communes$ind_snv), ]
 
-# Carte globale
 plot(grille_communes[&quot;ind_snv&quot;],
-     main = &quot;Niveau de vie médian par carreau — Roscoff et Plougasnou (200m)&quot;,
+     main = &quot;Niveau de vie médian — Roscoff et Plougasnou (200m)&quot;,
      pal = colorRampPalette(c(&quot;#f0f9ff&quot;, &quot;#0ea5e9&quot;, &quot;#0c4a6e&quot;)),
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj), add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
 <p><img src="analyse_files/figure-html/filosofi-1.png" alt="" width="672" /></p>
-<pre class="r"><code># Carte par commune
-par(mfrow = c(1, 2))
+<pre class="r"><code>par(mfrow = c(1, 2))
 
 plougasnou_grille &lt;- grille_communes[!is.na(grille_communes$nom_officiel) &amp;
                                       grille_communes$nom_officiel == &quot;Plougasnou&quot;, ]

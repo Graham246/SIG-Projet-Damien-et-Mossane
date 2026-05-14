@@ -35,7 +35,6 @@ communes <- get_wfs(x = zone,
                     layer = "ADMINEXPRESS-COG-CARTO.LATEST:commune")
 zone_etude <- communes[communes$nom_officiel %in% c("Roscoff", "Plougasnou"), ]
 
-# Parc éolien offshore avec plusieurs éoliennes
 coords_eoliennes <- data.frame(
   lon = c(-3.95, -3.98, -4.01, -3.92, -3.88),
   lat = c(48.72, 48.74, 48.71, 48.75, 48.73)
@@ -47,7 +46,6 @@ eoliennes_sfc <- st_sfc(
 eoliennes <- st_sf(geometry = st_transform(eoliennes_sfc, 2154))
 eoliennes$hauteur <- 180
 
-# Calcul du viewshed combiné
 visibilite_list <- lapply(1:nrow(eoliennes), function(i) {
   coords <- st_coordinates(eoliennes[i, ])
   viewshed(mnt,
@@ -100,32 +98,25 @@ L'opposition à Plougasnou est donc plus localisée (riverains directs), tandis 
 ## Carte du niveau de vie
 
 ```{r filosofi}
-# Chargement du carreau Filosofi
-grille <- st_read("data/carreaux_200m_met.gpkg", quiet = TRUE)
+# Chargement depuis un chemin absolu hors du projet
+grille <- st_read("C:/Users/damie/Documents/carreaux_200m_met.gpkg", quiet = TRUE)
 
-# Reprojection en Lambert-93
 grille_proj <- st_transform(grille, 2154)
 zone_etude_proj <- st_transform(zone_etude, 2154)
 
-# Jointure spatiale avec les limites communales
 idx <- st_intersects(grille_proj, st_union(zone_etude_proj), sparse = FALSE)[,1]
 grille_communes <- grille_proj[idx, ]
 
-# Jointure attributaire pour identifier la commune
 grille_communes <- st_join(grille_communes, zone_etude_proj["nom_officiel"])
-
-# Nettoyage des valeurs manquantes
 grille_communes <- grille_communes[!is.na(grille_communes$ind_snv), ]
 
-# Carte globale
 plot(grille_communes["ind_snv"],
-     main = "Niveau de vie médian par carreau — Roscoff et Plougasnou (200m)",
+     main = "Niveau de vie médian — Roscoff et Plougasnou (200m)",
      pal = colorRampPalette(c("#f0f9ff", "#0ea5e9", "#0c4a6e")),
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj), add = TRUE, border = "black", lwd = 2)
 
-# Carte par commune
 par(mfrow = c(1, 2))
 
 plougasnou_grille <- grille_communes[!is.na(grille_communes$nom_officiel) &
