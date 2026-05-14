@@ -23,11 +23,9 @@ Alors que **Plougasnou possède un relief plus accidenté** (falaises, pointes) 
 ## Barplot de visibilité
 
 ```{r barplot}
-# Zone d'étude
 point <- st_sfc(st_point(c(-3.85, 48.65)), crs = 4326)
 zone <- st_buffer(st_transform(point, 2154), 20000)
 
-# Téléchargement MNT et communes
 mnt <- get_wms_raster(x = zone,
                       layer = "ELEVATION.ELEVATIONGRIDCOVERAGE.HIGHRES",
                       res = 25,
@@ -37,19 +35,16 @@ communes <- get_wfs(x = zone,
                     layer = "ADMINEXPRESS-COG-CARTO.LATEST:commune")
 zone_etude <- communes[communes$nom_officiel %in% c("Roscoff", "Plougasnou"), ]
 
-# Point éolienne
 eolienne_sfc <- st_sfc(st_point(c(-3.95, 48.72)), crs = 4326)
 eolienne_proj <- st_transform(eolienne_sfc, 2154)
 eolienne <- st_sf(geometry = eolienne_proj)
 
-# Calcul viewshed
 coords <- st_coordinates(eolienne)
 visibilite <- viewshed(mnt,
                        loc = c(coords[1], coords[2]),
                        observer = 180,
                        target = 1.75)
 
-# Découpage par commune
 roscoff <- zone_etude[zone_etude$nom_officiel == "Roscoff", ]
 plougasnou <- zone_etude[zone_etude$nom_officiel == "Plougasnou", ]
 
@@ -59,7 +54,6 @@ plougasnou_vect <- project(vect(plougasnou), crs(visibilite))
 visib_roscoff <- crop(visibilite, roscoff_vect, mask = TRUE)
 visib_plougasnou <- crop(visibilite, plougasnou_vect, mask = TRUE)
 
-# Calcul taux
 calc_taux <- function(r) {
   f <- freq(r)
   visible <- f$count[f$value == 1]
@@ -71,7 +65,6 @@ calc_taux <- function(r) {
 taux_roscoff <- calc_taux(visib_roscoff)
 taux_plougasnou <- calc_taux(visib_plougasnou)
 
-# Barplot
 barplot(c(taux_roscoff, taux_plougasnou),
         names.arg = c("Roscoff", "Plougasnou"),
         col = c("#2196F3", "#FF9800"),
@@ -88,9 +81,32 @@ text(x = c(0.7, 1.9),
 
 L'opposition à Plougasnou est donc plus localisée (riverains directs), tandis qu'à Roscoff, elle est globale car elle touche à l'image de marque de la cité.
 
-*[cartes carroyage résidence secondaire]*
+## Carte des résidences secondaires
 
-Ensuite, on observe une corrélation entre **visibilité** et enjeux **socio-économiques**, lorsque l'on fait le croisement avec le **carroyage Filosofi**. Les zones ayant la plus forte visibilité sur le parc coïncident souvent avec les quartiers à haut taux de résidences secondaires (comme le front de mer). Pour ces propriétaires, pour qui l'éolien est perçu comme une **nuisance visuelle**, on comprend que l'enjeu de la visibilité est primordial et peut devenir l'un des premiers motifs d'opposition à l'implantation éolienne.
+```{r filosofi}
+grille <- st_read("data/carreaux_200m_met.gpkg", quiet = TRUE)
+
+grille_etude <- st_transform(grille, 2154)
+zone_etude_proj <- st_transform(zone_etude, 2154)
+
+idx <- st_intersects(grille_etude, st_union(zone_etude_proj), sparse = FALSE)[,1]
+grille_etude <- grille_etude[idx, ]
+
+grille_etude$part_res_sec <- (grille_etude$log_inc - grille_etude$men) / grille_etude$log_inc * 100
+grille_etude$part_res_sec <- ifelse(is.na(grille_etude$part_res_sec), 
+                                     0, 
+                                     grille_etude$part_res_sec)
+
+plot(grille_etude["part_res_sec"],
+     main = "Part des résidences secondaires (200m)",
+     pal = colorRampPalette(c("#fff7ed", "#f97316", "#7c2d12")),
+     border = NA)
+plot(st_geometry(zone_etude_proj), add = TRUE, border = "black", lwd = 2)
+```
+
+Ensuite, on observe une corrélation entre **visibilité** et enjeux **socio-économiques**, lorsque l'on fait le croisement avec le **carroyage Filosofi.** Les zones ayant la plus forte visibilité sur le parc coïncident souvent avec les quartiers à où le niveau de vie est plus élevé (comme le front de mer). Pour ces propriétaires plus aisés, et dont le capital culturel peut être plus élevé par exemple, on comprend que **la valeur esthétique** accordée au cadre de vie est un enjeu principal et que la visibilité des éoliennes devient un motif important d'opposition au projet.
+
+Par ailleurs, on constate que l'**influence politique du groupe social est proportionnelle à son niveau de vie** : les propriétaires plus élevés socialement possèdent un pouvoir de contestation plus important et donc, de meilleures capacité à défendre la valeur d'un paysage.
 
 ---
 
@@ -98,6 +114,8 @@ Ensuite, on observe une corrélation entre **visibilité** et enjeux **socio-éc
 
 L'analyse spatiale croisée révèle que l'acceptabilité sociale dans le Finistère n'est pas distribuée de manière aléatoire, mais répond à une logique de **pression foncière et de visibilité**.
 
-Le carroyage **Filosofi** permet de confirmer que les zones à forte concentration de **résidences secondaires** se situent précisément sur les lignes de front visuel. Pour les propriétaires, dont l'investissement est avant tout lié à la "valeur de contemplation", le projet éolien est perçu comme une dépréciation directe de leur patrimoine. En définitive, le niveau d'acceptabilité est inversement proportionnel à l'exposition visuelle des zones à haute valeur immobilière : là où le relief ne peut servir de bouclier, **la résidence secondaire devient le principal foyer de contestation**.
+Le carroyage **Filosofi** permet de confirmer que les zones à forte concentration de **résidences secondaires** se situent précisément sur les lignes de front visuel. Pour les propriétaires possédant un niveau de vie élevé, et dont l'investissement est avant tout lié à la "valeur de contemplation", le projet éolien est perçu comme une dépréciation directe de leur patrimoine. En définitive, le niveau d'acceptabilité est inversement proportionnel à l'exposition visuelle des zones à haute valeur immobilière : là où le relief ne peut servir de bouclier, **la résidence secondaire devient le principal foyer de contestation**.
 
-Le SIG démontre que le potentiel éolien est une donnée **physique**, mais que l'acceptabilité est une donnée **territoriale**. Pour réussir l'implantation d'un projet, il ne suffit pas de calculer la force du vent : il faut comprendre la structure invisible des usages et la sensibilité des lignes de crête.
+Le SIG démontre que le potentiel éolien est une donnée **physique**, mais que l'acceptabilité est une donnée **territoriale**. Lors de la mise en place de projets éoliens tels que ceux-ci, il faut prendre en compte (en plus d'éléments comme la force du vent), la structure invisible des usages et la sensibilité des lignes de crête.
+
+Le projet éolien offshore vient impacter visuellement les "espaces de distinction" où le niveau de vie est le plus élevé. Là où le relief de Plougasnou parvient à **isoler visuellement les foyers de hauts revenus**, la contestation reste localisée. À l'inverse, la topographie plane de Roscoff expose **l'intégralité de sa population la plus aisée et influente** à une modification de son cadre de vie. L'acceptabilité sociale apparaît ici comme **le reflet d'un rapport de force** : elle est d'autant plus faible que le projet altère le paysage de populations disposant du capital nécessaire pour transformer un mécontentement individuel en un blocage politique structuré.
