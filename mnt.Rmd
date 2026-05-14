@@ -1,7 +1,7 @@
 ---
 title: "Modèle Numérique de Terrain"
-author: "Damien Ribeiro et Mossane Kachama"
 output: html_document
+
 ---
 
 ```{r setup, include=FALSE}
