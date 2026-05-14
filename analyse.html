@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Damien Ribeiro et Mossane Kachama" />
+
+<meta name="date" content="2026-05-13" />
+
+<title>Analyse, Synthèse et Conclusion</title>
+
+<script src="site_libs/header-attrs-2.31/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Acceptabilité éolienne</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Accueil</a>
+</li>
+<li>
+  <a href="zones.html">Données</a>
+</li>
+<li>
+  <a href="mnt.html">MNT</a>
+</li>
+<li>
+  <a href="analyse.html">Analyse</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Analyse, Synthèse et Conclusion</h1>
+<h4 class="author">Damien Ribeiro et Mossane Kachama</h4>
+<h4 class="date">2026-05-13</h4>
+
+</div>
+
+
+<div id="lanalyse-de-lintervisibilité" class="section level2">
+<h2>L’Analyse de l’intervisibilité</h2>
+<p>Dans notre analyse, le <strong>MNT</strong> a permis de prouver une
+différence majeure entre les deux communes.</p>
+<p>Même si la distance à la côte est la même, la topographie diffère :
+<strong>Roscoff est relativement plat,</strong> la topographie est celle
+d’un plateau littoral. La visibilité du parc éolien est quasi-totale
+depuis le centre historique et le port. L’éolienne n’est pas seulement
+un objet lointain, <strong>elle devient un nouvel élément de
+l’horizon</strong> qui entre en concurrence directe avec le clocher de
+Notre-Dame-de-Croaz-Batz. La vue sur mer est omniprésente depuis le
+centre-ville.</p>
+<p>Alors que <strong>Plougasnou possède un relief plus
+accidenté</strong> (falaises, pointes) ce qui crée des “zones d’ombre”.
+Une partie importante de la population résidant en retrait de la côte ou
+dans les dépressions topographiques <strong>n’aura aucune vue directe
+sur les machines</strong>. Les éoliennes peuvent être visibles depuis
+certains sommets, mais totalement masquées pour les habitants vivant
+dans les creux de vallons.</p>
+</div>
+<div id="barplot-de-visibilité" class="section level2">
+<h2>Barplot de visibilité</h2>
+<pre class="r"><code>point &lt;- st_sfc(st_point(c(-3.85, 48.65)), crs = 4326)
+zone &lt;- st_buffer(st_transform(point, 2154), 20000)
+
+mnt &lt;- get_wms_raster(x = zone,
+                      layer = &quot;ELEVATION.ELEVATIONGRIDCOVERAGE.HIGHRES&quot;,
+                      res = 25,
+                      crs = 2154)</code></pre>
+<pre><code>## 0</code></pre>
+<pre><code>## ...10...20...30...40...50...60...70...80...90...100 - done.</code></pre>
+<pre class="r"><code>communes &lt;- get_wfs(x = zone,
+                    layer = &quot;ADMINEXPRESS-COG-CARTO.LATEST:commune&quot;)
+zone_etude &lt;- communes[communes$nom_officiel %in% c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;), ]
+
+# Parc éolien offshore avec plusieurs éoliennes
+coords_eoliennes &lt;- data.frame(
+  lon = c(-3.95, -3.98, -4.01, -3.92, -3.88),
+  lat = c(48.72, 48.74, 48.71, 48.75, 48.73)
+)
+eoliennes_sfc &lt;- st_sfc(
+  lapply(1:nrow(coords_eoliennes), function(i) {
+    st_point(c(coords_eoliennes$lon[i], coords_eoliennes$lat[i]))
+  }), crs = 4326)
+eoliennes &lt;- st_sf(geometry = st_transform(eoliennes_sfc, 2154))
+eoliennes$hauteur &lt;- 180
+
+# Calcul du viewshed combiné pour toutes les éoliennes
+visibilite_list &lt;- lapply(1:nrow(eoliennes), function(i) {
+  coords &lt;- st_coordinates(eoliennes[i, ])
+  viewshed(mnt,
+           loc = c(coords[1], coords[2]),
+           observer = 180,
+           target = 1.75)
+})
+
+# Union des viewsheds
+visibilite &lt;- visibilite_list[[1]]
+for (i in 2:length(visibilite_list)) {
+  visibilite &lt;- max(visibilite, visibilite_list[[i]])
+}
+
+# Visualisation du parc
+plot(mnt, main = &quot;Parc éolien offshore — Baie de Morlaix&quot;,
+     col = terrain.colors(100))
+plot(st_geometry(zone_etude), add = TRUE, border = &quot;black&quot;, lwd = 2)
+plot(st_geometry(eoliennes), add = TRUE, col = &quot;red&quot;, pch = 17, cex = 1.5)
+legend(&quot;topright&quot;, legend = c(&quot;Communes&quot;, &quot;Éoliennes offshore&quot;),
+       col = c(&quot;black&quot;, &quot;red&quot;), lty = c(1, NA), pch = c(NA, 17))</code></pre>
+<p><img src="analyse_files/figure-html/barplot-1.png" alt="" width="672" /></p>
+<pre class="r"><code># Découpage par commune
+roscoff &lt;- zone_etude[zone_etude$nom_officiel == &quot;Roscoff&quot;, ]
+plougasnou &lt;- zone_etude[zone_etude$nom_officiel == &quot;Plougasnou&quot;, ]
+
+roscoff_vect &lt;- project(vect(roscoff), crs(visibilite))
+plougasnou_vect &lt;- project(vect(plougasnou), crs(visibilite))
+
+visib_roscoff &lt;- crop(visibilite, roscoff_vect, mask = TRUE)
+visib_plougasnou &lt;- crop(visibilite, plougasnou_vect, mask = TRUE)
+
+calc_taux &lt;- function(r) {
+  f &lt;- freq(r)
+  visible &lt;- f$count[f$value == 1]
+  total &lt;- sum(f$count)
+  if (length(visible) == 0) return(0)
+  round((visible / total) * 100, 1)
+}
+
+taux_roscoff &lt;- calc_taux(visib_roscoff)
+taux_plougasnou &lt;- calc_taux(visib_plougasnou)
+
+# Barplot
+barplot(c(taux_roscoff, taux_plougasnou),
+        names.arg = c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;),
+        col = c(&quot;#2196F3&quot;, &quot;#FF9800&quot;),
+        main = &quot;Taux de visibilité du parc éolien par commune&quot;,
+        ylab = &quot;% du territoire avec vue sur le parc&quot;,
+        ylim = c(0, 100),
+        border = NA)
+abline(h = seq(0, 100, 20), col = &quot;grey90&quot;, lty = 2)
+text(x = c(0.7, 1.9),
+     y = c(taux_roscoff + 3, taux_plougasnou + 3),
+     labels = paste0(c(taux_roscoff, taux_plougasnou), &quot;%&quot;),
+     font = 2)</code></pre>
+<p><img src="analyse_files/figure-html/barplot-2.png" alt="" width="672" /></p>
+<p>L’opposition à Plougasnou est donc plus localisée (riverains
+directs), tandis qu’à Roscoff, elle est globale car elle touche à
+l’image de marque de la cité.</p>
+</div>
+<div id="carte-des-résidences-secondaires" class="section level2">
+<h2>Carte des résidences secondaires</h2>
+<pre class="r"><code>grille &lt;- st_read(&quot;data/carreaux_200m_met.gpkg&quot;, quiet = TRUE)
+
+grille_etude &lt;- st_transform(grille, 2154)
+zone_etude_proj &lt;- st_transform(zone_etude, 2154)
+
+idx &lt;- st_intersects(grille_etude, st_union(zone_etude_proj), sparse = FALSE)[,1]
+grille_etude &lt;- grille_etude[idx, ]
+
+grille_etude$part_res_sec &lt;- (grille_etude$log_inc - grille_etude$men) / grille_etude$log_inc * 100
+grille_etude$part_res_sec &lt;- ifelse(is.na(grille_etude$part_res_sec), 
+                                     0, 
+                                     grille_etude$part_res_sec)
+
+plot(grille_etude[&quot;part_res_sec&quot;],
+     main = &quot;Part des résidences secondaires (200m)&quot;,
+     pal = colorRampPalette(c(&quot;#fff7ed&quot;, &quot;#f97316&quot;, &quot;#7c2d12&quot;)),
+     border = NA)
+plot(st_geometry(zone_etude_proj), add = TRUE, border = &quot;black&quot;, lwd = 2)</code></pre>
+<p><img src="analyse_files/figure-html/filosofi-1.png" alt="" width="672" /></p>
+<p>Ensuite, on observe une corrélation entre <strong>visibilité</strong>
+et enjeux <strong>socio-économiques</strong>, lorsque l’on fait le
+croisement avec le <strong>carroyage Filosofi.</strong> Les zones ayant
+la plus forte visibilité sur le parc coïncident souvent avec les
+quartiers à où le niveau de vie est plus élevé (comme le front de mer).
+Pour ces propriétaires plus aisés, et dont le capital culturel peut être
+plus élevé par exemple, on comprend que <strong>la valeur
+esthétique</strong> accordée au cadre de vie est un enjeu principal et
+que la visibilité des éoliennes devient un motif important d’opposition
+au projet.</p>
+<p>Par ailleurs, on constate que l’<strong>influence politique du groupe
+social est proportionnelle à son niveau de vie</strong> : les
+propriétaires plus élevés socialement possèdent un pouvoir de
+contestation plus important et donc, de meilleures capacité à défendre
+la valeur d’un paysage.</p>
+<hr />
+</div>
+<div id="conclusion" class="section level2">
+<h2>Conclusion</h2>
+<p>L’analyse spatiale croisée révèle que l’acceptabilité sociale dans le
+Finistère n’est pas distribuée de manière aléatoire, mais répond à une
+logique de <strong>pression foncière et de visibilité</strong>.</p>
+<p>Le carroyage <strong>Filosofi</strong> permet de confirmer que les
+zones à forte concentration de <strong>résidences secondaires</strong>
+se situent précisément sur les lignes de front visuel. Pour les
+propriétaires possédant un niveau de vie élevé, et dont l’investissement
+est avant tout lié à la “valeur de contemplation”, le projet éolien est
+perçu comme une dépréciation directe de leur patrimoine. En définitive,
+le niveau d’acceptabilité est inversement proportionnel à l’exposition
+visuelle des zones à haute valeur immobilière : là où le relief ne peut
+servir de bouclier, <strong>la résidence secondaire devient le principal
+foyer de contestation</strong>.</p>
+<p>Le SIG démontre que le potentiel éolien est une donnée
+<strong>physique</strong>, mais que l’acceptabilité est une donnée
+<strong>territoriale</strong>. Lors de la mise en place de projets
+éoliens tels que ceux-ci, il faut prendre en compte (en plus d’éléments
+comme la force du vent), la structure invisible des usages et la
+sensibilité des lignes de crête.</p>
+<p>Le projet éolien offshore vient impacter visuellement les “espaces de
+distinction” où le niveau de vie est le plus élevé. Là où le relief de
+Plougasnou parvient à <strong>isoler visuellement les foyers de hauts
+revenus</strong>, la contestation reste localisée. À l’inverse, la
+topographie plane de Roscoff expose <strong>l’intégralité de sa
+population la plus aisée et influente</strong> à une modification de son
+cadre de vie. L’acceptabilité sociale apparaît ici comme <strong>le
+reflet d’un rapport de force</strong> : elle est d’autant plus faible
+que le projet altère le paysage de populations disposant du capital
+nécessaire pour transformer un mécontentement individuel en un blocage
+politique structuré.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

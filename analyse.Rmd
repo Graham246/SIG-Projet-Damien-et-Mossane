@@ -35,16 +35,42 @@ communes <- get_wfs(x = zone,
                     layer = "ADMINEXPRESS-COG-CARTO.LATEST:commune")
 zone_etude <- communes[communes$nom_officiel %in% c("Roscoff", "Plougasnou"), ]
 
-eolienne_sfc <- st_sfc(st_point(c(-3.95, 48.72)), crs = 4326)
-eolienne_proj <- st_transform(eolienne_sfc, 2154)
-eolienne <- st_sf(geometry = eolienne_proj)
+# Parc éolien offshore avec plusieurs éoliennes
+coords_eoliennes <- data.frame(
+  lon = c(-3.95, -3.98, -4.01, -3.92, -3.88),
+  lat = c(48.72, 48.74, 48.71, 48.75, 48.73)
+)
+eoliennes_sfc <- st_sfc(
+  lapply(1:nrow(coords_eoliennes), function(i) {
+    st_point(c(coords_eoliennes$lon[i], coords_eoliennes$lat[i]))
+  }), crs = 4326)
+eoliennes <- st_sf(geometry = st_transform(eoliennes_sfc, 2154))
+eoliennes$hauteur <- 180
 
-coords <- st_coordinates(eolienne)
-visibilite <- viewshed(mnt,
-                       loc = c(coords[1], coords[2]),
-                       observer = 180,
-                       target = 1.75)
+# Calcul du viewshed combiné pour toutes les éoliennes
+visibilite_list <- lapply(1:nrow(eoliennes), function(i) {
+  coords <- st_coordinates(eoliennes[i, ])
+  viewshed(mnt,
+           loc = c(coords[1], coords[2]),
+           observer = 180,
+           target = 1.75)
+})
 
+# Union des viewsheds
+visibilite <- visibilite_list[[1]]
+for (i in 2:length(visibilite_list)) {
+  visibilite <- max(visibilite, visibilite_list[[i]])
+}
+
+# Visualisation du parc
+plot(mnt, main = "Parc éolien offshore — Baie de Morlaix",
+     col = terrain.colors(100))
+plot(st_geometry(zone_etude), add = TRUE, border = "black", lwd = 2)
+plot(st_geometry(eoliennes), add = TRUE, col = "red", pch = 17, cex = 1.5)
+legend("topright", legend = c("Communes", "Éoliennes offshore"),
+       col = c("black", "red"), lty = c(1, NA), pch = c(NA, 17))
+
+# Découpage par commune
 roscoff <- zone_etude[zone_etude$nom_officiel == "Roscoff", ]
 plougasnou <- zone_etude[zone_etude$nom_officiel == "Plougasnou", ]
 
@@ -65,11 +91,12 @@ calc_taux <- function(r) {
 taux_roscoff <- calc_taux(visib_roscoff)
 taux_plougasnou <- calc_taux(visib_plougasnou)
 
+# Barplot
 barplot(c(taux_roscoff, taux_plougasnou),
         names.arg = c("Roscoff", "Plougasnou"),
         col = c("#2196F3", "#FF9800"),
-        main = "Taux de visibilité de l'éolienne par commune",
-        ylab = "% du territoire avec vue sur l'éolienne",
+        main = "Taux de visibilité du parc éolien par commune",
+        ylab = "% du territoire avec vue sur le parc",
         ylim = c(0, 100),
         border = NA)
 abline(h = seq(0, 100, 20), col = "grey90", lty = 2)

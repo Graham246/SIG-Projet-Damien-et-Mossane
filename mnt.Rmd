@@ -41,42 +41,63 @@ plot(mnt,
      col = terrain.colors(100))
 ```
 
-## 3. Zone d'étude et emplacement de l'éolienne
+## 3. Zone d'étude et parc éolien offshore
 
 ```{r eoliennes}
 communes <- get_wfs(x = zone,
                     layer = "ADMINEXPRESS-COG-CARTO.LATEST:commune")
 zone_etude <- communes[communes$nom_officiel %in% c("Roscoff", "Plougasnou"), ]
 
-eolienne_sfc <- st_sfc(st_point(c(-3.95, 48.72)), crs = 4326)
-eolienne_proj <- st_transform(eolienne_sfc, 2154)
-eolienne <- st_sf(geometry = eolienne_proj)
-eolienne$hauteur <- 180
+# Parc éolien offshore avec plusieurs éoliennes
+coords_eoliennes <- data.frame(
+  lon = c(-3.95, -3.98, -4.01, -3.92, -3.88),
+  lat = c(48.72, 48.74, 48.71, 48.75, 48.73)
+)
+eoliennes_sfc <- st_sfc(
+  lapply(1:nrow(coords_eoliennes), function(i) {
+    st_point(c(coords_eoliennes$lon[i], coords_eoliennes$lat[i]))
+  }), crs = 4326)
+eoliennes <- st_sf(geometry = st_transform(eoliennes_sfc, 2154))
+eoliennes$hauteur <- 180
 
-plot(mnt, main = "Zone d'étude et emplacement de l'éolienne",
+# Visualisation
+plot(mnt, main = "Parc éolien offshore — Baie de Morlaix",
      col = terrain.colors(100))
 plot(st_geometry(zone_etude), add = TRUE, border = "black", lwd = 2)
-plot(st_geometry(eolienne), add = TRUE, col = "red", pch = 17, cex = 2)
-legend("topright", legend = c("Communes", "Éolienne offshore"),
+plot(st_geometry(eoliennes), add = TRUE, col = "red", pch = 17, cex = 1.5)
+legend("topright", legend = c("Communes", "Éoliennes offshore"),
        col = c("black", "red"), lty = c(1, NA), pch = c(NA, 17))
 ```
 
-## 4. Calcul du Viewshed
+## 4. Calcul du Viewshed du parc
 
 ```{r viewshed}
-coords <- st_coordinates(eolienne)
-visibilite <- viewshed(mnt,
-                       loc = c(coords[1], coords[2]),
-                       observer = 180,
-                       target = 1.75)
+# Calcul du viewshed pour chaque éolienne
+visibilite_list <- lapply(1:nrow(eoliennes), function(i) {
+  coords <- st_coordinates(eoliennes[i, ])
+  viewshed(mnt,
+           loc = c(coords[1], coords[2]),
+           observer = 180,
+           target = 1.75)
+})
 
+# Union des viewsheds
+visibilite <- visibilite_list[[1]]
+for (i in 2:length(visibilite_list)) {
+  visibilite <- max(visibilite, visibilite_list[[i]])
+}
+
+# Visualisation
 plot(visibilite,
-     main = "Bassin de visibilité de l'éolienne",
+     main = "Bassin de visibilité du parc éolien",
      col = c("#f1f5f9", "#ef4444"),
      legend = FALSE)
 plot(st_geometry(zone_etude), add = TRUE, border = "black", lwd = 2)
-legend("topright", legend = c("Non visible", "Visible"),
-       fill = c("#f1f5f9", "#ef4444"))
+plot(st_geometry(eoliennes), add = TRUE, col = "blue", pch = 17, cex = 1.5)
+legend("topright", legend = c("Non visible", "Visible", "Éoliennes"),
+       fill = c("#f1f5f9", "#ef4444", NA),
+       pch = c(NA, NA, 17),
+       col = c(NA, NA, "blue"))
 ```
 
 ## 5. Analyse comparative Roscoff vs Plougasnou
@@ -109,7 +130,7 @@ resultats <- data.frame(
 
 knitr::kable(resultats,
              col.names = c("Commune", "Taux de visibilité (%)"),
-             caption = "Pourcentage du territoire avec vue sur l'éolienne")
+             caption = "Pourcentage du territoire avec vue sur le parc éolien")
 ```
 
 ## 6. Interprétation
