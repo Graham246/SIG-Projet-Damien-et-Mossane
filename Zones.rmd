@@ -58,29 +58,50 @@ plot(st_geometry(zone_etude),
 
 ## D. Schéma du géotraitement
 
-```{r mermaid, echo=FALSE}
-DiagrammeR::mermaid("
-flowchart TD
-    Start([Analyse Géotraitement<br/>Plougasnou vs Roscoff]) --> BranchA[Branche A:<br/>Analyse Physique]
-    Start --> BranchB[Branche B:<br/>Analyse Socio-Économique]
-    
-    BranchA --> InputA1[INPUT Raster:<br/>MNT RGE Alti<br/>via happign]
-    BranchA --> InputA2[INPUT Vecteur:<br/>Emplacement Éoliennes<br/>Points]
-    InputA1 --> TraitA[TRAITEMENT terra:<br/>Calcul Viewshed<br/>Bassin de visibilité]
-    InputA2 --> TraitA
-    TraitA --> OutputA[OUTPUT:<br/>Raster Visibilité<br/>Pixel: 1=vu, 0=non-vu]
-    
-    BranchB --> InputB1[INPUT Vecteur:<br/>Carroyage Filosofi 200m<br/>INSEE]
-    BranchB --> InputB2[INPUT Vecteur:<br/>Limites Communales<br/>via happign]
-    InputB1 --> TraitB1[TRAITEMENT sf:<br/>Découpage<br/>st_intersection]
-    InputB2 --> TraitB1
-    TraitB1 --> TraitB2[Jointure Attributaire<br/>left_join<br/>Revenus + Résidences sec.]
-    TraitB2 --> OutputB[OUTPUT:<br/>Carroyage Enrichi<br/>Données Socio-Éco]
-    
-    OutputA --> Convergence[Convergence:<br/>Synthèse Spatiale]
-    OutputB --> Convergence
-    Convergence --> Cross[CROISEMENT:<br/>Superposition<br/>Raster Visibilité +<br/>Carroyage Enrichi]
-    Cross --> Final([RÉSULTAT FINAL:<br/>Carte Synthétique<br/>Visibilité + Résidences sec.<br/>+ Revenus])
+```{r schema, echo=FALSE}
+library(DiagrammeR)
+grViz("
+digraph geotraitement {
+  graph [layout = dot, rankdir = TB, fontname = 'Helvetica']
+  node [fontname = 'Helvetica', fontsize = 11]
+
+  Start [label = 'Analyse Géotraitement\nPlougasnou vs Roscoff', shape = oval, style = filled, fillcolor = '#fdf4ff', color = '#e879f9']
+  BranchA [label = 'Branche A:\nAnalyse Physique', shape = rectangle, style = filled, fillcolor = '#f8fafc', color = '#94a3b8']
+  BranchB [label = 'Branche B:\nAnalyse Socio-Économique', shape = rectangle, style = filled, fillcolor = '#f8fafc', color = '#94a3b8']
+
+  InputA1 [label = 'INPUT Raster:\nMNT RGE Alti\nvia happign', shape = rectangle, style = filled, fillcolor = '#eef2ff', color = '#818cf8']
+  InputA2 [label = 'INPUT Vecteur:\nEmplacement Éoliennes\nPoints', shape = rectangle, style = filled, fillcolor = '#eef2ff', color = '#818cf8']
+  TraitA [label = 'TRAITEMENT terra:\nCalcul Viewshed\nBassin de visibilité', shape = rectangle, style = filled, fillcolor = '#f0fdfa', color = '#2dd4bf']
+  OutputA [label = 'OUTPUT:\nRaster Visibilité\nPixel: 1=vu, 0=non-vu', shape = rectangle, style = filled, fillcolor = '#f5f3ff', color = '#a78bfa']
+
+  InputB1 [label = 'INPUT Vecteur:\nCarroyage Filosofi 200m\nINSEE', shape = rectangle, style = filled, fillcolor = '#eef2ff', color = '#818cf8']
+  InputB2 [label = 'INPUT Vecteur:\nLimites Communales\nvia happign', shape = rectangle, style = filled, fillcolor = '#eef2ff', color = '#818cf8']
+  TraitB1 [label = 'TRAITEMENT sf:\nDécoupage\nst_intersection', shape = rectangle, style = filled, fillcolor = '#f0fdfa', color = '#2dd4bf']
+  TraitB2 [label = 'Jointure Attributaire\nleft_join\nRevenus + Résidences sec.', shape = rectangle, style = filled, fillcolor = '#f0fdfa', color = '#2dd4bf']
+  OutputB [label = 'OUTPUT:\nCarroyage Enrichi\nDonnées Socio-Éco', shape = rectangle, style = filled, fillcolor = '#f5f3ff', color = '#a78bfa']
+
+  Convergence [label = 'Convergence:\nSynthèse Spatiale', shape = rectangle, style = filled, fillcolor = '#fff7ed', color = '#fb923c']
+  Cross [label = 'CROISEMENT:\nSuperposition\nRaster Visibilité +\nCarroyage Enrichi', shape = rectangle, style = filled, fillcolor = '#fff7ed', color = '#fb923c']
+  Final [label = 'RÉSULTAT FINAL:\nCarte Synthétique\nVisibilité + Résidences sec.\n+ Revenus', shape = oval, style = filled, fillcolor = '#fdf4ff', color = '#e879f9']
+
+  Start -> BranchA
+  Start -> BranchB
+  BranchA -> InputA1
+  BranchA -> InputA2
+  InputA1 -> TraitA
+  InputA2 -> TraitA
+  TraitA -> OutputA
+  BranchB -> InputB1
+  BranchB -> InputB2
+  InputB1 -> TraitB1
+  InputB2 -> TraitB1
+  TraitB1 -> TraitB2
+  TraitB2 -> OutputB
+  OutputA -> Convergence
+  OutputB -> Convergence
+  Convergence -> Cross
+  Cross -> Final
+}
 ")
 ```
 
