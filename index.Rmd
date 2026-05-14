@@ -14,3 +14,13 @@ output: html_document
 Les deux communes étudiées, Roscoff et Plougasnou, se situent dans la Baie de Morlaix, sur le littoral du Finistère Nord, où l'on identifie un fort potentiel énergétique pour l'éolien. On observe alors de nombreux débats autour de la mise en place de projets éolien, et notamment autour de leur acceptabilité dans les différentes communes concernées. Roscoff et Plougasnou se trouvent à moins de 15km l'une de l'autre et présentent un potentiel éolien quasiment identique (un régime de vent avec une dominante Ouest/Nord-Ouest, une faible profondeur offshore…), et elles partagent une riche biodiversité marine et les contraintes Natura 2000 qui l'accompagnent, ainsi qu'un développement d'activité liée au littoral. Pourtant, d'un point de vue social, les projets d'implantation d'éoliennes sont reçus assez différemment.
 
 En croisant des **critères physiques**, comme le relief auquel est soumis chaque commune, et des **critères socio-économiques** concernant les occupants de ces deux communes, nous essaierons d'identifier les éléments entrants en corrélation et pouvant influer sur la manière dont chaque commune est affectée par l'implantation éolienne.
+
+## Un littoral gentrifié à haute valeur contemplative
+
+Le littoral finistérien est marqué par une présence massive de cadres et de retraités aisés, souvent originaires de grandes métropoles. Pour ces catégories de population (très présente à Roscoff et sur les hauteurs de Plougasnou), la mer n'est pas un outil de travail, mais un "capital esthétique". L'éolienne est perçue comme une **intrusion industrielle** dans un espace sacré de loisir et de repos.
+
+L'opposition est souvent menée par des associations de riverains très structurées, possédant un fort **capital culturel** (capacité à rédiger des recours juridiques, à mobiliser les médias). C'est le syndrome **NIMBY** (*Not In My Backyard*), où l'on accepte la transition énergétique, mais pas à portée de regard.
+
+À Plougasnou, la mer est fortement associée à la pêche. On a alors une opposition des pêcheurs, qui repose sur une logique de **territoire de travail**. Pour eux, l'éolienne est une "machine" qui colonise leur champ de production.
+
+À Roscoff, la mer est un décor. L'identité de la commune est liée à son histoire de "Cité Corsaire". Ici, l'éolienne est vécue comme une **rupture historique**. Le sentiment d'appartenance à une ville "musée" rend toute modification de l'horizon insupportable pour les résidents.
