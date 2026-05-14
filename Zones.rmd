@@ -37,11 +37,14 @@ communes <- get_wfs(x = zone,
 
 zone_etude <- communes[communes$nom_officiel %in% c("Roscoff", "Plougasnou"), ]
 
+# Colorier explicitement chaque commune
+couleurs <- ifelse(zone_etude$nom_officiel == "Plougasnou", "#2196F3", "#FF9800")
+
 plot(st_geometry(zone_etude), 
-     col = c("#FF9800", "#2196F3"),
+     col = couleurs,
      main = "Zone d'étude : Roscoff et Plougasnou")
-legend("topright", legend = c("Roscoff", "Plougasnou"),
-       fill = c("#FF9800", "#2196F3"))
+legend("topright", legend = c("Plougasnou", "Roscoff"),
+       fill = c("#2196F3", "#FF9800"))
 ```
 
 ## B. Téléchargement du carreau Filosofi (INSEE)
@@ -55,8 +58,10 @@ zone_etude_proj <- st_transform(zone_etude, 2154)
 idx <- st_intersects(grille_proj, st_union(zone_etude_proj), sparse = FALSE)[,1]
 grille_zone <- grille_proj[idx, ]
 
+couleurs_proj <- ifelse(zone_etude_proj$nom_officiel == "Plougasnou", "#2196F3", "#FF9800")
+
 plot(st_geometry(zone_etude_proj), 
-     col = c("#FF9800", "#2196F3"),
+     col = couleurs_proj,
      main = "Carreau Filosofi 200m — Roscoff et Plougasnou")
 plot(st_geometry(grille_zone), 
      col = "#eef2ff88", border = "#818cf8", 
@@ -64,6 +69,8 @@ plot(st_geometry(grille_zone),
 plot(st_geometry(zone_etude_proj), 
      col = NA, border = "black", lwd = 2,
      add = TRUE)
+legend("topright", legend = c("Plougasnou", "Roscoff"),
+       fill = c("#2196F3", "#FF9800"))
 ```
 
 ## C. Jointure spatiale sur les communes
@@ -75,14 +82,14 @@ plot(st_geometry(zone_etude_proj),
      col = NA, border = "black", lwd = 2,
      main = "Carreau Filosofi découpé par commune")
 plot(st_geometry(grille_communes[!is.na(grille_communes$nom_officiel) & 
-                                  grille_communes$nom_officiel == "Roscoff", ]),
-     col = "#fed7aa", border = "#f97316", add = TRUE)
-plot(st_geometry(grille_communes[!is.na(grille_communes$nom_officiel) & 
                                   grille_communes$nom_officiel == "Plougasnou", ]),
      col = "#bfdbfe", border = "#3b82f6", add = TRUE)
+plot(st_geometry(grille_communes[!is.na(grille_communes$nom_officiel) & 
+                                  grille_communes$nom_officiel == "Roscoff", ]),
+     col = "#fed7aa", border = "#f97316", add = TRUE)
 legend("topright", 
-       legend = c("Roscoff", "Plougasnou"),
-       fill = c("#fed7aa", "#bfdbfe"))
+       legend = c("Plougasnou", "Roscoff"),
+       fill = c("#bfdbfe", "#fed7aa"))
 ```
 
 ## D. Schéma du géotraitement

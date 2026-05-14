@@ -351,11 +351,14 @@ communes &lt;- get_wfs(x = zone,
 
 zone_etude &lt;- communes[communes$nom_officiel %in% c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;), ]
 
+# Colorier explicitement chaque commune
+couleurs &lt;- ifelse(zone_etude$nom_officiel == &quot;Plougasnou&quot;, &quot;#2196F3&quot;, &quot;#FF9800&quot;)
+
 plot(st_geometry(zone_etude), 
-     col = c(&quot;#FF9800&quot;, &quot;#2196F3&quot;),
+     col = couleurs,
      main = &quot;Zone d&#39;étude : Roscoff et Plougasnou&quot;)
-legend(&quot;topright&quot;, legend = c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;),
-       fill = c(&quot;#FF9800&quot;, &quot;#2196F3&quot;))</code></pre>
+legend(&quot;topright&quot;, legend = c(&quot;Plougasnou&quot;, &quot;Roscoff&quot;),
+       fill = c(&quot;#2196F3&quot;, &quot;#FF9800&quot;))</code></pre>
 <p><img src="zones_files/figure-html/communes-1.png" alt="" width="672" /></p>
 </div>
 <div id="b.-téléchargement-du-carreau-filosofi-insee"
@@ -369,15 +372,19 @@ zone_etude_proj &lt;- st_transform(zone_etude, 2154)
 idx &lt;- st_intersects(grille_proj, st_union(zone_etude_proj), sparse = FALSE)[,1]
 grille_zone &lt;- grille_proj[idx, ]
 
+couleurs_proj &lt;- ifelse(zone_etude_proj$nom_officiel == &quot;Plougasnou&quot;, &quot;#2196F3&quot;, &quot;#FF9800&quot;)
+
 plot(st_geometry(zone_etude_proj), 
-     col = c(&quot;#FF9800&quot;, &quot;#2196F3&quot;),
+     col = couleurs_proj,
      main = &quot;Carreau Filosofi 200m — Roscoff et Plougasnou&quot;)
 plot(st_geometry(grille_zone), 
      col = &quot;#eef2ff88&quot;, border = &quot;#818cf8&quot;, 
      add = TRUE)
 plot(st_geometry(zone_etude_proj), 
      col = NA, border = &quot;black&quot;, lwd = 2,
-     add = TRUE)</code></pre>
+     add = TRUE)
+legend(&quot;topright&quot;, legend = c(&quot;Plougasnou&quot;, &quot;Roscoff&quot;),
+       fill = c(&quot;#2196F3&quot;, &quot;#FF9800&quot;))</code></pre>
 <p><img src="zones_files/figure-html/filosofi-1.png" alt="" width="672" /></p>
 </div>
 <div id="c.-jointure-spatiale-sur-les-communes" class="section level2">
@@ -388,20 +395,20 @@ plot(st_geometry(zone_etude_proj),
      col = NA, border = &quot;black&quot;, lwd = 2,
      main = &quot;Carreau Filosofi découpé par commune&quot;)
 plot(st_geometry(grille_communes[!is.na(grille_communes$nom_officiel) &amp; 
-                                  grille_communes$nom_officiel == &quot;Roscoff&quot;, ]),
-     col = &quot;#fed7aa&quot;, border = &quot;#f97316&quot;, add = TRUE)
-plot(st_geometry(grille_communes[!is.na(grille_communes$nom_officiel) &amp; 
                                   grille_communes$nom_officiel == &quot;Plougasnou&quot;, ]),
      col = &quot;#bfdbfe&quot;, border = &quot;#3b82f6&quot;, add = TRUE)
+plot(st_geometry(grille_communes[!is.na(grille_communes$nom_officiel) &amp; 
+                                  grille_communes$nom_officiel == &quot;Roscoff&quot;, ]),
+     col = &quot;#fed7aa&quot;, border = &quot;#f97316&quot;, add = TRUE)
 legend(&quot;topright&quot;, 
-       legend = c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;),
-       fill = c(&quot;#fed7aa&quot;, &quot;#bfdbfe&quot;))</code></pre>
+       legend = c(&quot;Plougasnou&quot;, &quot;Roscoff&quot;),
+       fill = c(&quot;#bfdbfe&quot;, &quot;#fed7aa&quot;))</code></pre>
 <p><img src="zones_files/figure-html/jointure-1.png" alt="" width="672" /></p>
 </div>
 <div id="d.-schéma-du-géotraitement" class="section level2">
 <h2>D. Schéma du géotraitement</h2>
-<div class="grViz html-widget html-fill-item" id="htmlwidget-c061f07959d1a60a5d06" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-c061f07959d1a60a5d06">{"x":{"diagram":"\ndigraph geotraitement {\n  graph [layout = dot, rankdir = TB, fontname = \"Helvetica\"]\n  node [fontname = \"Helvetica\", fontsize = 11]\n\n  Start [label = \"Analyse Géotraitement\nPlougasnou vs Roscoff\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n  BranchA [label = \"Branche A:\nAnalyse Physique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n  BranchB [label = \"Branche B:\nAnalyse Socio-Économique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n  InputA1 [label = \"INPUT Raster:\nMNT RGE Alti\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputA2 [label = \"INPUT Vecteur:\nEmplacement Éoliennes\nPoints\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitA [label = \"TRAITEMENT terra:\nCalcul Viewshed\nBassin de visibilité\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputA [label = \"OUTPUT:\nRaster Visibilité\nPixel: 1=vu, 0=non-vu\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n  InputB1 [label = \"INPUT Vecteur:\nCarroyage Filosofi 200m\nINSEE\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputB2 [label = \"INPUT Vecteur:\nLimites Communales\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitB1 [label = \"TRAITEMENT sf:\nDécoupage\nst_intersection\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  TraitB2 [label = \"Jointure Attributaire\nleft_join\nRevenus + Résidences sec.\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputB [label = \"OUTPUT:\nCarroyage Enrichi\nDonnées Socio-Éco\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n  Convergence [label = \"Convergence:\nSynthèse Spatiale\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Cross [label = \"CROISEMENT:\nSuperposition\nRaster Visibilité +\nCarroyage Enrichi\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Final [label = \"RÉSULTAT FINAL:\nCarte Synthétique\nVisibilité + Résidences sec.\n+ Revenus\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n\n  Start -> BranchA\n  Start -> BranchB\n  BranchA -> InputA1\n  BranchA -> InputA2\n  InputA1 -> TraitA\n  InputA2 -> TraitA\n  TraitA -> OutputA\n  BranchB -> InputB1\n  BranchB -> InputB2\n  InputB1 -> TraitB1\n  InputB2 -> TraitB1\n  TraitB1 -> TraitB2\n  TraitB2 -> OutputB\n  OutputA -> Convergence\n  OutputB -> Convergence\n  Convergence -> Cross\n  Cross -> Final\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-098f82dbf82f3b93f5d1" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-098f82dbf82f3b93f5d1">{"x":{"diagram":"\ndigraph geotraitement {\n  graph [layout = dot, rankdir = TB, fontname = \"Helvetica\"]\n  node [fontname = \"Helvetica\", fontsize = 11]\n\n  Start [label = \"Analyse Géotraitement\nPlougasnou vs Roscoff\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n  BranchA [label = \"Branche A:\nAnalyse Physique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n  BranchB [label = \"Branche B:\nAnalyse Socio-Économique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n  InputA1 [label = \"INPUT Raster:\nMNT RGE Alti\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputA2 [label = \"INPUT Vecteur:\nEmplacement Éoliennes\nPoints\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitA [label = \"TRAITEMENT terra:\nCalcul Viewshed\nBassin de visibilité\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputA [label = \"OUTPUT:\nRaster Visibilité\nPixel: 1=vu, 0=non-vu\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n  InputB1 [label = \"INPUT Vecteur:\nCarroyage Filosofi 200m\nINSEE\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputB2 [label = \"INPUT Vecteur:\nLimites Communales\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitB1 [label = \"TRAITEMENT sf:\nDécoupage\nst_intersection\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  TraitB2 [label = \"Jointure Attributaire\nleft_join\nRevenus + Résidences sec.\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputB [label = \"OUTPUT:\nCarroyage Enrichi\nDonnées Socio-Éco\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n  Convergence [label = \"Convergence:\nSynthèse Spatiale\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Cross [label = \"CROISEMENT:\nSuperposition\nRaster Visibilité +\nCarroyage Enrichi\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Final [label = \"RÉSULTAT FINAL:\nCarte Synthétique\nVisibilité + Résidences sec.\n+ Revenus\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n\n  Start -> BranchA\n  Start -> BranchB\n  BranchA -> InputA1\n  BranchA -> InputA2\n  InputA1 -> TraitA\n  InputA2 -> TraitA\n  TraitA -> OutputA\n  BranchB -> InputB1\n  BranchB -> InputB2\n  InputB1 -> TraitB1\n  InputB2 -> TraitB1\n  TraitB1 -> TraitB2\n  TraitB2 -> OutputB\n  OutputA -> Convergence\n  OutputB -> Convergence\n  Convergence -> Cross\n  Cross -> Final\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="e.-le-format-geopackage-.gpkg" class="section level2">
 <h2>E. Le format GeoPackage (.gpkg)</h2>
