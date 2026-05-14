@@ -275,8 +275,8 @@ $(document).ready(function () {
 </div>
 
 
-<div id="lanalyse-de-lintervisibilité" class="section level2">
-<h2>L’Analyse de l’intervisibilité</h2>
+<div id="analyse-de-lintervisibilité" class="section level2">
+<h2>Analyse de l’intervisibilité</h2>
 <p>Dans notre analyse, le <strong>MNT</strong> a permis de prouver une
 différence majeure entre les deux communes.</p>
 <p>Même si la distance à la côte est la même, la topographie diffère :
@@ -304,6 +304,7 @@ mnt &lt;- get_wms_raster(x = zone,
                       layer = &quot;ELEVATION.ELEVATIONGRIDCOVERAGE.HIGHRES&quot;,
                       res = 25,
                       crs = 2154)</code></pre>
+<pre><code>## 0</code></pre>
 <pre><code>## ...10...20...30...40...50...60...70...80...90...100 - done.</code></pre>
 <pre class="r"><code>communes &lt;- get_wfs(x = zone,
                     layer = &quot;ADMINEXPRESS-COG-CARTO.LATEST:commune&quot;)

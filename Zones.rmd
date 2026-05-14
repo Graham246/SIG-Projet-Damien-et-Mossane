@@ -29,42 +29,34 @@ Nous avons mobilisé deux types de données géographiques pour répondre à not
 ## A. Téléchargement des limites administratives
 
 ```{r communes}
-# Créer un point centré sur la Baie de Morlaix
 point <- st_sfc(st_point(c(-3.85, 48.65)), crs = 4326)
 zone <- st_buffer(st_transform(point, 2154), 15000)
 
-# Téléchargement des communes
 communes <- get_wfs(x = zone,
                     layer = "ADMINEXPRESS-COG-CARTO.LATEST:commune")
 
-# Filtrage sur Roscoff et Plougasnou
 zone_etude <- communes[communes$nom_officiel %in% c("Roscoff", "Plougasnou"), ]
 
-# Affichage
 plot(st_geometry(zone_etude), 
-     col = c("#2196F3", "#FF9800"),
+     col = c("#FF9800", "#2196F3"),
      main = "Zone d'étude : Roscoff et Plougasnou")
-legend("topright", legend = c("Plougasnou", "Roscoff"),
-       fill = c("#2196F3", "#FF9800"))
+legend("topright", legend = c("Roscoff", "Plougasnou"),
+       fill = c("#FF9800", "#2196F3"))
 ```
 
 ## B. Téléchargement du carreau Filosofi (INSEE)
 
 ```{r filosofi}
-# Chargement depuis Documents
 grille <- st_read("C:/Users/damie/Documents/carreaux_200m_met.gpkg", quiet = TRUE)
 
-# Reprojection en Lambert-93
 grille_proj <- st_transform(grille, 2154)
 zone_etude_proj <- st_transform(zone_etude, 2154)
 
-# Filtrage sur la zone d'étude
 idx <- st_intersects(grille_proj, st_union(zone_etude_proj), sparse = FALSE)[,1]
 grille_zone <- grille_proj[idx, ]
 
-# Affichage du carreau par dessus les communes
 plot(st_geometry(zone_etude_proj), 
-     col = c("#2196F3", "#FF9800"),
+     col = c("#FF9800", "#2196F3"),
      main = "Carreau Filosofi 200m — Roscoff et Plougasnou")
 plot(st_geometry(grille_zone), 
      col = "#eef2ff88", border = "#818cf8", 
@@ -77,22 +69,20 @@ plot(st_geometry(zone_etude_proj),
 ## C. Jointure spatiale sur les communes
 
 ```{r jointure}
-# Jointure spatiale
 grille_communes <- st_join(grille_zone, zone_etude_proj["nom_officiel"])
 
-# Affichage par commune
 plot(st_geometry(zone_etude_proj), 
      col = NA, border = "black", lwd = 2,
      main = "Carreau Filosofi découpé par commune")
 plot(st_geometry(grille_communes[!is.na(grille_communes$nom_officiel) & 
                                   grille_communes$nom_officiel == "Roscoff", ]),
-     col = "#bfdbfe", border = "#3b82f6", add = TRUE)
+     col = "#fed7aa", border = "#f97316", add = TRUE)
 plot(st_geometry(grille_communes[!is.na(grille_communes$nom_officiel) & 
                                   grille_communes$nom_officiel == "Plougasnou", ]),
-     col = "#fed7aa", border = "#f97316", add = TRUE)
+     col = "#bfdbfe", border = "#3b82f6", add = TRUE)
 legend("topright", 
        legend = c("Roscoff", "Plougasnou"),
-       fill = c("#bfdbfe", "#fed7aa"))
+       fill = c("#fed7aa", "#bfdbfe"))
 ```
 
 ## D. Schéma du géotraitement
