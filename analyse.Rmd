@@ -96,7 +96,7 @@ text(x = c(0.7, 1.9),
 
 L'opposition à Plougasnou est donc plus localisée (riverains directs), tandis qu'à Roscoff, elle est globale car elle touche à l'image de marque de la cité.
 
-## Carte des résidences secondaires
+## Carte du niveau de vie
 
 ```{r filosofi}
 # Chargement du carreau Filosofi
@@ -113,21 +113,13 @@ grille_communes <- grille_proj[idx, ]
 # Jointure attributaire pour identifier la commune
 grille_communes <- st_join(grille_communes, zone_etude_proj["nom_officiel"])
 
-# Calcul de la part des résidences secondaires
-grille_communes$part_res_sec <- ifelse(
-  grille_communes$log_inc > 0,
-  (grille_communes$log_inc - grille_communes$men) / grille_communes$log_inc * 100,
-  NA
-)
-
-# Suppression des valeurs aberrantes
-grille_communes$part_res_sec[grille_communes$part_res_sec < 0] <- 0
-grille_communes$part_res_sec[grille_communes$part_res_sec > 100] <- 100
+# Nettoyage des valeurs manquantes
+grille_communes <- grille_communes[!is.na(grille_communes$ind_snv), ]
 
 # Carte globale
-plot(grille_communes["part_res_sec"],
-     main = "Part des résidences secondaires — Roscoff et Plougasnou (200m)",
-     pal = colorRampPalette(c("#fff7ed", "#f97316", "#7c2d12")),
+plot(grille_communes["ind_snv"],
+     main = "Niveau de vie médian par carreau — Roscoff et Plougasnou (200m)",
+     pal = colorRampPalette(c("#f0f9ff", "#0ea5e9", "#0c4a6e")),
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj), add = TRUE, border = "black", lwd = 2)
@@ -135,21 +127,21 @@ plot(st_geometry(zone_etude_proj), add = TRUE, border = "black", lwd = 2)
 # Carte par commune
 par(mfrow = c(1, 2))
 
-roscoff_grille <- grille_communes[!is.na(grille_communes$nom_officiel) & 
+roscoff_grille <- grille_communes[!is.na(grille_communes$nom_officiel) &
                                    grille_communes$nom_officiel == "Roscoff", ]
-plot(roscoff_grille["part_res_sec"],
+plot(roscoff_grille["ind_snv"],
      main = "Roscoff",
-     pal = colorRampPalette(c("#fff7ed", "#f97316", "#7c2d12")),
+     pal = colorRampPalette(c("#f0f9ff", "#0ea5e9", "#0c4a6e")),
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == "Roscoff", ]),
      add = TRUE, border = "black", lwd = 2)
 
-plougasnou_grille <- grille_communes[!is.na(grille_communes$nom_officiel) & 
+plougasnou_grille <- grille_communes[!is.na(grille_communes$nom_officiel) &
                                       grille_communes$nom_officiel == "Plougasnou", ]
-plot(plougasnou_grille["part_res_sec"],
+plot(plougasnou_grille["ind_snv"],
      main = "Plougasnou",
-     pal = colorRampPalette(c("#fff7ed", "#f97316", "#7c2d12")),
+     pal = colorRampPalette(c("#f0f9ff", "#0ea5e9", "#0c4a6e")),
      border = NA,
      key.pos = 4)
 plot(st_geometry(zone_etude_proj[zone_etude_proj$nom_officiel == "Plougasnou", ]),
@@ -168,7 +160,7 @@ Par ailleurs, on constate que l'**influence politique du groupe social est propo
 
 L'analyse spatiale croisée révèle que l'acceptabilité sociale dans le Finistère n'est pas distribuée de manière aléatoire, mais répond à une logique de **pression foncière et de visibilité**.
 
-Le carroyage **Filosofi** permet de confirmer que les zones à forte concentration de **résidences secondaires** se situent précisément sur les lignes de front visuel. Pour les propriétaires possédant un niveau de vie élevé, et dont l'investissement est avant tout lié à la "valeur de contemplation", le projet éolien est perçu comme une dépréciation directe de leur patrimoine. En définitive, le niveau d'acceptabilité est inversement proportionnel à l'exposition visuelle des zones à haute valeur immobilière : là où le relief ne peut servir de bouclier, **la résidence secondaire devient le principal foyer de contestation**.
+Le carroyage **Filosofi** permet de confirmer que les zones à fort niveau de vie se situent précisément sur les lignes de front visuel. Pour les propriétaires possédant un niveau de vie élevé, et dont l'investissement est avant tout lié à la "valeur de contemplation", le projet éolien est perçu comme une dépréciation directe de leur patrimoine. En définitive, le niveau d'acceptabilité est inversement proportionnel à l'exposition visuelle des zones à haute valeur immobilière : là où le relief ne peut servir de bouclier, **la résidence secondaire devient le principal foyer de contestation**.
 
 Le SIG démontre que le potentiel éolien est une donnée **physique**, mais que l'acceptabilité est une donnée **territoriale**. Lors de la mise en place de projets éoliens tels que ceux-ci, il faut prendre en compte (en plus d'éléments comme la force du vent), la structure invisible des usages et la sensibilité des lignes de crête.
 
