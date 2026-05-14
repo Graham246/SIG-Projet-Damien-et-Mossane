@@ -298,22 +298,88 @@ omniprésente depuis le centre-ville</li>
 </div>
 <div id="téléchargement-du-mnt" class="section level2">
 <h2>2. Téléchargement du MNT</h2>
+<pre class="r"><code>point &lt;- st_sfc(st_point(c(-3.85, 48.65)), crs = 4326)
+zone &lt;- st_buffer(st_transform(point, 2154), 20000)
+
+mnt &lt;- get_wms_raster(x = zone,
+                      layer = &quot;ELEVATION.ELEVATIONGRIDCOVERAGE.HIGHRES&quot;,
+                      res = 25,
+                      crs = 2154)</code></pre>
 <pre><code>## 0</code></pre>
 <pre><code>## ...10...20...30...40...50...60...70...80...90...100 - done.</code></pre>
+<pre class="r"><code>plot(mnt, 
+     main = &quot;MNT de la zone d&#39;étude — Baie de Morlaix&quot;,
+     col = terrain.colors(100))</code></pre>
 <p><img src="mnt_files/figure-html/mnt-1.png" alt="" width="672" /></p>
 </div>
 <div id="zone-détude-et-emplacement-de-léolienne"
 class="section level2">
 <h2>3. Zone d’étude et emplacement de l’éolienne</h2>
+<pre class="r"><code>communes &lt;- get_wfs(x = zone,
+                    layer = &quot;ADMINEXPRESS-COG-CARTO.LATEST:commune&quot;)
+zone_etude &lt;- communes[communes$nom_officiel %in% c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;), ]
+
+eolienne_sfc &lt;- st_sfc(st_point(c(-3.95, 48.72)), crs = 4326)
+eolienne_proj &lt;- st_transform(eolienne_sfc, 2154)
+eolienne &lt;- st_sf(geometry = eolienne_proj)
+eolienne$hauteur &lt;- 180
+
+plot(mnt, main = &quot;Zone d&#39;étude et emplacement de l&#39;éolienne&quot;,
+     col = terrain.colors(100))
+plot(st_geometry(zone_etude), add = TRUE, border = &quot;black&quot;, lwd = 2)
+plot(st_geometry(eolienne), add = TRUE, col = &quot;red&quot;, pch = 17, cex = 2)
+legend(&quot;topright&quot;, legend = c(&quot;Communes&quot;, &quot;Éolienne offshore&quot;),
+       col = c(&quot;black&quot;, &quot;red&quot;), lty = c(1, NA), pch = c(NA, 17))</code></pre>
 <p><img src="mnt_files/figure-html/eoliennes-1.png" alt="" width="672" /></p>
 </div>
 <div id="calcul-du-viewshed" class="section level2">
 <h2>4. Calcul du Viewshed</h2>
+<pre class="r"><code>coords &lt;- st_coordinates(eolienne)
+visibilite &lt;- viewshed(mnt,
+                       loc = c(coords[1], coords[2]),
+                       observer = 180,
+                       target = 1.75)
+
+plot(visibilite,
+     main = &quot;Bassin de visibilité de l&#39;éolienne&quot;,
+     col = c(&quot;#f1f5f9&quot;, &quot;#ef4444&quot;),
+     legend = FALSE)
+plot(st_geometry(zone_etude), add = TRUE, border = &quot;black&quot;, lwd = 2)
+legend(&quot;topright&quot;, legend = c(&quot;Non visible&quot;, &quot;Visible&quot;),
+       fill = c(&quot;#f1f5f9&quot;, &quot;#ef4444&quot;))</code></pre>
 <p><img src="mnt_files/figure-html/viewshed-1.png" alt="" width="672" /></p>
 </div>
 <div id="analyse-comparative-roscoff-vs-plougasnou"
 class="section level2">
 <h2>5. Analyse comparative Roscoff vs Plougasnou</h2>
+<pre class="r"><code>roscoff &lt;- zone_etude[zone_etude$nom_officiel == &quot;Roscoff&quot;, ]
+plougasnou &lt;- zone_etude[zone_etude$nom_officiel == &quot;Plougasnou&quot;, ]
+
+roscoff_vect &lt;- project(vect(roscoff), crs(visibilite))
+plougasnou_vect &lt;- project(vect(plougasnou), crs(visibilite))
+
+visib_roscoff &lt;- crop(visibilite, roscoff_vect, mask = TRUE)
+visib_plougasnou &lt;- crop(visibilite, plougasnou_vect, mask = TRUE)
+
+calc_taux &lt;- function(r) {
+  f &lt;- freq(r)
+  visible &lt;- f$count[f$value == 1]
+  total &lt;- sum(f$count)
+  if (length(visible) == 0) return(0)
+  round((visible / total) * 100, 1)
+}
+
+taux_roscoff &lt;- calc_taux(visib_roscoff)
+taux_plougasnou &lt;- calc_taux(visib_plougasnou)
+
+resultats &lt;- data.frame(
+  Commune = c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;),
+  Taux_visibilite = c(taux_roscoff, taux_plougasnou)
+)
+
+knitr::kable(resultats,
+             col.names = c(&quot;Commune&quot;, &quot;Taux de visibilité (%)&quot;),
+             caption = &quot;Pourcentage du territoire avec vue sur l&#39;éolienne&quot;)</code></pre>
 <table>
 <caption>Pourcentage du territoire avec vue sur l’éolienne</caption>
 <thead>
