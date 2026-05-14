@@ -289,13 +289,11 @@ données.</p>
 <div id="a.-téléchargement-des-limites-administratives"
 class="section level2">
 <h2>A. Téléchargement des limites administratives</h2>
-<p>Nous téléchargeons les communes de Roscoff et Plougasnou via
-<strong>happign</strong> :</p>
 <pre class="r"><code># Créer un point centré sur la Baie de Morlaix
 point &lt;- st_sfc(st_point(c(-3.85, 48.65)), crs = 4326)
 zone &lt;- st_buffer(st_transform(point, 2154), 15000)
 
-# Téléchargement des communes autour de la zone
+# Téléchargement des communes
 communes &lt;- get_wfs(x = zone,
                     layer = &quot;ADMINEXPRESS-COG-CARTO.LATEST:commune&quot;)
 
@@ -305,34 +303,40 @@ zone_etude &lt;- communes[communes$nom_officiel %in% c(&quot;Roscoff&quot;, &quo
 # Affichage
 plot(st_geometry(zone_etude), 
      col = c(&quot;#2196F3&quot;, &quot;#FF9800&quot;),
-     main = &quot;Zone d&#39;étude : Roscoff et Plougasnou&quot;)</code></pre>
+     main = &quot;Zone d&#39;étude : Roscoff et Plougasnou&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Roscoff&quot;, &quot;Plougasnou&quot;),
+       fill = c(&quot;#2196F3&quot;, &quot;#FF9800&quot;))</code></pre>
+<p><img src="zones_files/figure-html/communes-1.png" alt="" width="672" /></p>
 </div>
-<div id="b.-téléchargement-du-carreau-filosofi" class="section level2">
-<h2>B. Téléchargement du carreau Filosofi</h2>
-<p>Le carreau Filosofi (INSEE) fournit des données socio-économiques à
-l’échelle de carreaux de 200m : revenus médians et part de résidences
-secondaires.</p>
-<pre class="r"><code># Téléchargement du carreau Filosofi sur la zone d&#39;étude
-filosofi &lt;- get_wfs(x = zone,
-                    layer = &quot;STATISTIQUES-EXPRESS.FILOSOFI2019CARR200M:filosofi_carr_200m_met&quot;)
+<div id="b.-téléchargement-du-carreau-filosofi-insee"
+class="section level2">
+<h2>B. Téléchargement du carreau Filosofi (INSEE)</h2>
+<p>Le carreau Filosofi fournit des données socio-économiques à l’échelle
+de carreaux de 200m : revenus médians et part de résidences secondaires.
+Ces données sont téléchargées directement depuis le site de l’INSEE.</p>
+<pre class="r"><code># Téléchargement du carreau Filosofi depuis l&#39;INSEE
+# URL : https://www.insee.fr/fr/statistiques/fichier/7655475/Filosofi2019_carreaux_200m_gpkg.zip
+# Une fois téléchargé et décompressé :
+filosofi &lt;- st_read(&quot;data/Filosofi2019_carreaux_200m_metropole.gpkg&quot;)
 
-# Affichage
+# Filtrage sur la zone d&#39;étude
+filosofi_zone &lt;- st_intersection(st_transform(filosofi, 2154), zone)
+
+# Affichage du carreau par dessus les communes
 plot(st_geometry(zone_etude), 
-     col = NA, border = &quot;black&quot;, lwd = 2,
-     main = &quot;Carreau Filosofi 200m sur la zone d&#39;étude&quot;)
-plot(st_geometry(filosofi), 
-     col = &quot;#eef2ff&quot;, border = &quot;#818cf8&quot;, 
+     col = c(&quot;#2196F3&quot;, &quot;#FF9800&quot;),
+     main = &quot;Carreau Filosofi 200m — Roscoff et Plougasnou&quot;)
+plot(st_geometry(filosofi_zone), 
+     col = &quot;#eef2ff88&quot;, border = &quot;#818cf8&quot;, 
      add = TRUE)
 plot(st_geometry(zone_etude), 
-     col = NA, border = &quot;black&quot;, lwd = 2, 
+     col = NA, border = &quot;black&quot;, lwd = 2,
      add = TRUE)</code></pre>
 </div>
 <div id="c.-jointure-spatiale-sur-les-communes" class="section level2">
 <h2>C. Jointure spatiale sur les communes</h2>
-<p>On découpe le carreau Filosofi par commune pour obtenir les données
-socio-économiques de Roscoff et Plougasnou séparément.</p>
-<pre class="r"><code># Jointure spatiale : intersection du carreau avec les communes
-filosofi_communes &lt;- st_intersection(filosofi, zone_etude)
+<pre class="r"><code># Jointure spatiale
+filosofi_communes &lt;- st_intersection(filosofi_zone, zone_etude)
 
 # Affichage par commune
 plot(st_geometry(zone_etude), 
@@ -423,18 +427,13 @@ legend(&quot;topright&quot;,
 </div>
 <div id="f.-schéma-du-géotraitement" class="section level2">
 <h2>F. Schéma du géotraitement</h2>
-<div class="grViz html-widget html-fill-item" id="htmlwidget-925cf15c96f78e9bce35" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-925cf15c96f78e9bce35">{"x":{"diagram":"\ndigraph geotraitement {\n  graph [layout = dot, rankdir = TB, fontname = \"Helvetica\"]\n  node [fontname = \"Helvetica\", fontsize = 11]\n\n  Start [label = \"Analyse Géotraitement\nPlougasnou vs Roscoff\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n  BranchA [label = \"Branche A:\nAnalyse Physique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n  BranchB [label = \"Branche B:\nAnalyse Socio-Économique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n\n  InputA1 [label = \"INPUT Raster:\nMNT RGE Alti\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputA2 [label = \"INPUT Vecteur:\nEmplacement Éoliennes\nPoints\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitA [label = \"TRAITEMENT terra:\nCalcul Viewshed\nBassin de visibilité\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputA [label = \"OUTPUT:\nRaster Visibilité\nPixel: 1=vu, 0=non-vu\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n\n  InputB1 [label = \"INPUT Vecteur:\nCarroyage Filosofi 200m\nINSEE\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputB2 [label = \"INPUT Vecteur:\nLimites Communales\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitB1 [label = \"TRAITEMENT sf:\nDécoupage\nst_intersection\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  TraitB2 [label = \"Jointure Attributaire\nleft_join\nRevenus + Résidences sec.\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputB [label = \"OUTPUT:\nCarroyage Enrichi\nDonnées Socio-Éco\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n\n  Convergence [label = \"Convergence:\nSynthèse Spatiale\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Cross [label = \"CROISEMENT:\nSuperposition\nRaster Visibilité +\nCarroyage Enrichi\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Final [label = \"RÉSULTAT FINAL:\nCarte Synthétique\nVisibilité + Résidences sec.\n+ Revenus\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n\n  Start -> BranchA\n  Start -> BranchB\n  BranchA -> InputA1\n  BranchA -> InputA2\n  InputA1 -> TraitA\n  InputA2 -> TraitA\n  TraitA -> OutputA\n  BranchB -> InputB1\n  BranchB -> InputB2\n  InputB1 -> TraitB1\n  InputB2 -> TraitB1\n  TraitB1 -> TraitB2\n  TraitB2 -> OutputB\n  OutputA -> Convergence\n  OutputB -> Convergence\n  Convergence -> Cross\n  Cross -> Final\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-bfa9e00ed223f1d8fc77" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-bfa9e00ed223f1d8fc77">{"x":{"diagram":"\ndigraph geotraitement {\n  graph [layout = dot, rankdir = TB, fontname = \"Helvetica\"]\n  node [fontname = \"Helvetica\", fontsize = 11]\n\n  Start [label = \"Analyse Géotraitement\nPlougasnou vs Roscoff\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n  BranchA [label = \"Branche A:\nAnalyse Physique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n  BranchB [label = \"Branche B:\nAnalyse Socio-Économique\", shape = rectangle, style = filled, fillcolor = \"#f8fafc\", color = \"#94a3b8\"]\n  InputA1 [label = \"INPUT Raster:\nMNT RGE Alti\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputA2 [label = \"INPUT Vecteur:\nEmplacement Éoliennes\nPoints\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitA [label = \"TRAITEMENT terra:\nCalcul Viewshed\nBassin de visibilité\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputA [label = \"OUTPUT:\nRaster Visibilité\nPixel: 1=vu, 0=non-vu\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n  InputB1 [label = \"INPUT Vecteur:\nCarroyage Filosofi 200m\nINSEE\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  InputB2 [label = \"INPUT Vecteur:\nLimites Communales\nvia happign\", shape = rectangle, style = filled, fillcolor = \"#eef2ff\", color = \"#818cf8\"]\n  TraitB1 [label = \"TRAITEMENT sf:\nDécoupage\nst_intersection\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  TraitB2 [label = \"Jointure Attributaire\nleft_join\nRevenus + Résidences sec.\", shape = rectangle, style = filled, fillcolor = \"#f0fdfa\", color = \"#2dd4bf\"]\n  OutputB [label = \"OUTPUT:\nCarroyage Enrichi\nDonnées Socio-Éco\", shape = rectangle, style = filled, fillcolor = \"#f5f3ff\", color = \"#a78bfa\"]\n  Convergence [label = \"Convergence:\nSynthèse Spatiale\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Cross [label = \"CROISEMENT:\nSuperposition\nRaster Visibilité +\nCarroyage Enrichi\", shape = rectangle, style = filled, fillcolor = \"#fff7ed\", color = \"#fb923c\"]\n  Final [label = \"RÉSULTAT FINAL:\nCarte Synthétique\nVisibilité + Résidences sec.\n+ Revenus\", shape = oval, style = filled, fillcolor = \"#fdf4ff\", color = \"#e879f9\"]\n\n  Start -> BranchA\n  Start -> BranchB\n  BranchA -> InputA1\n  BranchA -> InputA2\n  InputA1 -> TraitA\n  InputA2 -> TraitA\n  TraitA -> OutputA\n  BranchB -> InputB1\n  BranchB -> InputB2\n  InputB1 -> TraitB1\n  InputB2 -> TraitB1\n  TraitB1 -> TraitB2\n  TraitB2 -> OutputB\n  OutputA -> Convergence\n  OutputB -> Convergence\n  Convergence -> Cross\n  Cross -> Final\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="g.-le-format-geopackage-.gpkg" class="section level2">
 <h2>G. Le format GeoPackage (.gpkg)</h2>
-<pre class="r"><code># Sauvegarde dans un GeoPackage
-st_write(zone_etude, &quot;data/projet_eolien.gpkg&quot;, 
-         layer = &quot;communes&quot;, 
-         append = FALSE)
-st_write(filosofi_communes, &quot;data/projet_eolien.gpkg&quot;,
-         layer = &quot;filosofi_communes&quot;,
-         append = FALSE)</code></pre>
+<pre class="r"><code>st_write(zone_etude, &quot;data/projet_eolien.gpkg&quot;, 
+         layer = &quot;communes&quot;, append = FALSE)</code></pre>
 <p>Toutes nos couches sont stockées dans un seul fichier
 <code>.gpkg</code> — unique, rapide et complet.</p>
 </div>

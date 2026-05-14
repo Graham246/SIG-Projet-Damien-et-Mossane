@@ -20,14 +20,12 @@ Pour répondre à notre problématique, nous mobilisons deux types de données.
 
 ## A. Téléchargement des limites administratives
 
-Nous téléchargeons les communes de Roscoff et Plougasnou via **happign** :
-
-```{r communes, eval=FALSE}
+```{r communes}
 # Créer un point centré sur la Baie de Morlaix
 point <- st_sfc(st_point(c(-3.85, 48.65)), crs = 4326)
 zone <- st_buffer(st_transform(point, 2154), 15000)
 
-# Téléchargement des communes autour de la zone
+# Téléchargement des communes
 communes <- get_wfs(x = zone,
                     layer = "ADMINEXPRESS-COG-CARTO.LATEST:commune")
 
@@ -38,36 +36,40 @@ zone_etude <- communes[communes$nom_officiel %in% c("Roscoff", "Plougasnou"), ]
 plot(st_geometry(zone_etude), 
      col = c("#2196F3", "#FF9800"),
      main = "Zone d'étude : Roscoff et Plougasnou")
+legend("topright", legend = c("Roscoff", "Plougasnou"),
+       fill = c("#2196F3", "#FF9800"))
 ```
 
-## B. Téléchargement du carreau Filosofi
+## B. Téléchargement du carreau Filosofi (INSEE)
 
-Le carreau Filosofi (INSEE) fournit des données socio-économiques à l'échelle de carreaux de 200m : revenus médians et part de résidences secondaires.
+Le carreau Filosofi fournit des données socio-économiques à l'échelle de carreaux de 200m : revenus médians et part de résidences secondaires. Ces données sont téléchargées directement depuis le site de l'INSEE.
 
-```{r filosofi, eval=FALSE}
-# Téléchargement du carreau Filosofi sur la zone d'étude
-filosofi <- get_wfs(x = zone,
-                    layer = "STATISTIQUES-EXPRESS.FILOSOFI2019CARR200M:filosofi_carr_200m_met")
+```{r filosofi, eval=FALSE, echo=TRUE}
+# Téléchargement du carreau Filosofi depuis l'INSEE
+# URL : https://www.insee.fr/fr/statistiques/fichier/7655475/Filosofi2019_carreaux_200m_gpkg.zip
+# Une fois téléchargé et décompressé :
+filosofi <- st_read("data/Filosofi2019_carreaux_200m_metropole.gpkg")
 
-# Affichage
+# Filtrage sur la zone d'étude
+filosofi_zone <- st_intersection(st_transform(filosofi, 2154), zone)
+
+# Affichage du carreau par dessus les communes
 plot(st_geometry(zone_etude), 
-     col = NA, border = "black", lwd = 2,
-     main = "Carreau Filosofi 200m sur la zone d'étude")
-plot(st_geometry(filosofi), 
-     col = "#eef2ff", border = "#818cf8", 
+     col = c("#2196F3", "#FF9800"),
+     main = "Carreau Filosofi 200m — Roscoff et Plougasnou")
+plot(st_geometry(filosofi_zone), 
+     col = "#eef2ff88", border = "#818cf8", 
      add = TRUE)
 plot(st_geometry(zone_etude), 
-     col = NA, border = "black", lwd = 2, 
+     col = NA, border = "black", lwd = 2,
      add = TRUE)
 ```
 
 ## C. Jointure spatiale sur les communes
 
-On découpe le carreau Filosofi par commune pour obtenir les données socio-économiques de Roscoff et Plougasnou séparément.
-
-```{r jointure, eval=FALSE}
-# Jointure spatiale : intersection du carreau avec les communes
-filosofi_communes <- st_intersection(filosofi, zone_etude)
+```{r jointure, eval=FALSE, echo=TRUE}
+# Jointure spatiale
+filosofi_communes <- st_intersection(filosofi_zone, zone_etude)
 
 # Affichage par commune
 plot(st_geometry(zone_etude), 
@@ -111,18 +113,15 @@ digraph geotraitement {
   Start [label = 'Analyse Géotraitement\nPlougasnou vs Roscoff', shape = oval, style = filled, fillcolor = '#fdf4ff', color = '#e879f9']
   BranchA [label = 'Branche A:\nAnalyse Physique', shape = rectangle, style = filled, fillcolor = '#f8fafc', color = '#94a3b8']
   BranchB [label = 'Branche B:\nAnalyse Socio-Économique', shape = rectangle, style = filled, fillcolor = '#f8fafc', color = '#94a3b8']
-
   InputA1 [label = 'INPUT Raster:\nMNT RGE Alti\nvia happign', shape = rectangle, style = filled, fillcolor = '#eef2ff', color = '#818cf8']
   InputA2 [label = 'INPUT Vecteur:\nEmplacement Éoliennes\nPoints', shape = rectangle, style = filled, fillcolor = '#eef2ff', color = '#818cf8']
   TraitA [label = 'TRAITEMENT terra:\nCalcul Viewshed\nBassin de visibilité', shape = rectangle, style = filled, fillcolor = '#f0fdfa', color = '#2dd4bf']
   OutputA [label = 'OUTPUT:\nRaster Visibilité\nPixel: 1=vu, 0=non-vu', shape = rectangle, style = filled, fillcolor = '#f5f3ff', color = '#a78bfa']
-
   InputB1 [label = 'INPUT Vecteur:\nCarroyage Filosofi 200m\nINSEE', shape = rectangle, style = filled, fillcolor = '#eef2ff', color = '#818cf8']
   InputB2 [label = 'INPUT Vecteur:\nLimites Communales\nvia happign', shape = rectangle, style = filled, fillcolor = '#eef2ff', color = '#818cf8']
   TraitB1 [label = 'TRAITEMENT sf:\nDécoupage\nst_intersection', shape = rectangle, style = filled, fillcolor = '#f0fdfa', color = '#2dd4bf']
   TraitB2 [label = 'Jointure Attributaire\nleft_join\nRevenus + Résidences sec.', shape = rectangle, style = filled, fillcolor = '#f0fdfa', color = '#2dd4bf']
   OutputB [label = 'OUTPUT:\nCarroyage Enrichi\nDonnées Socio-Éco', shape = rectangle, style = filled, fillcolor = '#f5f3ff', color = '#a78bfa']
-
   Convergence [label = 'Convergence:\nSynthèse Spatiale', shape = rectangle, style = filled, fillcolor = '#fff7ed', color = '#fb923c']
   Cross [label = 'CROISEMENT:\nSuperposition\nRaster Visibilité +\nCarroyage Enrichi', shape = rectangle, style = filled, fillcolor = '#fff7ed', color = '#fb923c']
   Final [label = 'RÉSULTAT FINAL:\nCarte Synthétique\nVisibilité + Résidences sec.\n+ Revenus', shape = oval, style = filled, fillcolor = '#fdf4ff', color = '#e879f9']
@@ -151,13 +150,8 @@ digraph geotraitement {
 ## G. Le format GeoPackage (.gpkg)
 
 ```{r gpkg, eval=FALSE}
-# Sauvegarde dans un GeoPackage
 st_write(zone_etude, "data/projet_eolien.gpkg", 
-         layer = "communes", 
-         append = FALSE)
-st_write(filosofi_communes, "data/projet_eolien.gpkg",
-         layer = "filosofi_communes",
-         append = FALSE)
+         layer = "communes", append = FALSE)
 ```
 
 Toutes nos couches sont stockées dans un seul fichier `.gpkg` — unique, rapide et complet.
