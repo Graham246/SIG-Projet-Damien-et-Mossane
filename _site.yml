@@ -11,3 +11,6 @@ navbar:
       href: mnt.html
     - text: "Analyse"
       href: analyse.html
+output:
+  html_document:
+    self_contained: false
